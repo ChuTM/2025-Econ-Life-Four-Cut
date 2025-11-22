@@ -196,8 +196,6 @@ function generateCompositeImage(
 		resultFileName
 	);
 
-	console.log(imageMap);
-
 	async function generate() {
 		const start = Date.now();
 		const composites = [];
@@ -299,7 +297,15 @@ function generateCompositeImage(
 				});
 
 				if (!SAVE_USER_PHOTOS) {
-					fs.unlinkSync(compositeLocalPath);
+					// remove /uploads
+					const uploadDir = path.join(
+						__dirname,
+						"public",
+						"uploads",
+						String(id)
+					);
+
+					fs.rmSync(uploadDir, { recursive: true });
 				}
 			} else {
 				io.emit("chat message", {
@@ -425,7 +431,6 @@ io.on("connection", (socket) => {
 			);
 
 			const imageMap = {};
-			console.log(imagePathMap);
 			imagePathMap.forEach((imgPath, index) => {
 				imageMap[`{{image-${index + 1}}}`] = imgPath;
 			});
