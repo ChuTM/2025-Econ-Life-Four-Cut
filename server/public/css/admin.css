@@ -1,0 +1,92 @@
+body {
+	font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+		"Helvetica Neue", sans-serif;
+	background: #1e1e1e;
+	color: #fff;
+	padding: 1rem;
+}
+
+button {
+	padding: 5px 15px;
+	cursor: pointer;
+	background: #3299ff;
+	border-radius: 7px;
+	border: none;
+	outline: none;
+	color: #000;
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.flex {
+	margin: 1rem;
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+#status {
+	margin: 1rem;
+}
+
+#status div {
+	margin-bottom: 0.5rem;
+}
+
+#console {
+	background: #000;
+	color: #0f0;
+	height: 300px;
+	overflow: auto;
+	padding: 1rem;
+	margin: 1rem;
+	border-radius: 7px;
+	font-family: monospace;
+}
+
+.online {
+	color: #0f0;
+}
+
+.offline {
+	color: #f00;
+}
+
+input {
+	width: 250px;
+	padding: 5px;
+	font-family: monospace;
+	background: #333;
+	color: #fff;
+	border: 1px solid #555;
+	border-radius: 4px;
+}
+
+.console-command {
+	color: #66ccff;
+}
+
+.console-response {
+	color: #0f0;
+}
+
+.console-error {
+	color: #f44;
+}
+
+.console-join {
+	color: #ff6;
+}
+
+.console-leave {
+	color: #fa0;
+}
+
+.console-chat {
+	color: #fff;
+}
+
+.console-server {
+	color: #0ff;
+}

@@ -1,0 +1,81 @@
+====================================================================
+  PRINTERPC – WIRELESS GOOGLE PHOTOS PRINTER FOR EPSON L4260 (macOS)
+====================================================================
+
+This turns any Mac into a wireless print server:
+→ Send a Google Photos link from your phone → it prints instantly on the L4260.
+No drivers, no cables, no apps. Just Wi-Fi + AirPrint.
+
+────────────────────────────────────
+1. ONE-TIME PRINTER SETUP (3–5 minutes)
+────────────────────────────────────
+Do this directly on the Epson L4260 touchscreen:
+
+1. Press Home → Wi-Fi Setup → Wi-Fi Setup Wizard
+2. Choose your home Wi-Fi network
+3. Enter your Wi-Fi password using the touchscreen
+4. Wait until you see the blue Wi-Fi icon and “Connected”
+
+That’s it. The printer now has AirPrint enabled.
+
+────────────────────────────────────
+2. ONE-TIME MAC CHECK (30 seconds)
+────────────────────────────────────
+1. Make sure your Mac is on the SAME Wi-Fi as the printer
+2. Open System Settings → Printers & Scanners
+   → “EPSON L4260 Series” should appear automatically
+
+3. Open Terminal and run:
+   lpstat -p | grep -i l4260
+
+   You should see something like:
+   printer EPSON_L4260_Series is idle...
+
+If you see that line → everything is ready.
+
+────────────────────────────────────
+3. RUN THE NODE.JS SCRIPT
+────────────────────────────────────
+Requirements (one-time):
+   npm install socket.io-client axios
+
+Then just run:
+   node printerpc.js
+
+First run will ask for your WebSocket server URL (example):
+   http://192.168.1.100:3000
+
+(Change 192.168.1.100 to the actual IP of the machine running the chat/server)
+
+The script will show:
+   Connected & registered as "PrinterPC"
+   Ready for :print- links!
+
+────────────────────────────────────
+4. HOW TO PRINT FROM YOUR PHONE
+────────────────────────────────────
+In your chat app (or wherever the WebSocket server is connected), just type:
+
+   :print-https://your-google-photos-link-here
+
+Example:
+   :print-https://lh3.googleusercontent.com/d/ABCD1234...
+
+The Mac will:
+   → Download the photo in high quality
+   → Auto-scale to A4
+   → Print wirelessly via AirPrint
+   → Delete the temp file
+
+Done in 10–20 seconds.
+
+────────────────────────────────────
+TROUBLESHOOTING
+────────────────────────────────────
+• Printer not found? → Double-check both devices are on the SAME Wi-Fi
+• Still nothing? → Restart the printer once (helps Bonjour discovery)
+• Test manually:
+    echo "test" | lp -d "EPSON_L4260_Series"
+  If that prints → the script will work too
+
+Last updated: November 2025

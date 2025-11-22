@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Econ Open Day | iPad</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FFC0CB">
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/ipad.css" />
+    <link rel="stylesheet" href="/css/filters.css" />
+</head>
+
+<body>
+
+    <div class="page page-1">
+        <button class="start-button">Start</button>
+    </div>
+
+    <div class="page page-2">
+        <div class="wrapper">
+            <span class="frame" id="1" data-pictures-required="6">
+                <img src="/assets/img/3x2.png">
+            </span>
+            <span class="frame" id="2" data-pictures-required="4">
+                <img src="/assets/img/4x2.png">
+            </span>
+            <span class="frame" id="3" data-pictures-required="6">
+                <img src="/assets/img/3x2.png">
+            </span>
+            <span class="frame" id="4" data-pictures-required="4">
+                <img src="/assets/img/4x2.png">
+            </span>
+            <span class="frame" id="5" data-pictures-required="6">
+                <img src="/assets/img/3x2.png">
+            </span>
+        </div>
+
+        <button class="frame-button">Choose This</button>
+    </div>
+
+    <div class="page page-3">
+        <div class="fullscreen-effect-image">
+            <img src="/assets/img/aucp.jpg" alt="">
+        </div>
+        <div class="wrapper" id="filterSwiper">
+            <div class="filter filter-1">
+                <div class="blur-overlay"></div>
+                <div class="filter-overlay"></div>
+            </div>
+            <div class="filter filter-2">
+                <div class="blur-overlay"></div>
+                <div class="filter-overlay"></div>
+            </div>
+            <div class="filter filter-3">
+                <div class="blur-overlay"></div>
+                <div class="filter-overlay"></div>
+            </div>
+            <div class="filter filter-4">
+                <div class="blur-overlay"></div>
+                <div class="filter-overlay"></div>
+            </div>
+        </div>
+        <button class="filter-button">Choose This</button>
+    </div>
+
+    <div class="page page-4">
+        <span class="picture-count">Your <span class="fraction">1 / 4</span> Picture in</span>
+        <h2 class="countdown">20</h2>
+        <span class="unit">seconds</span>
+        <button class="skip">Skip</button>
+    </div>
+
+    <div class="page page-5">
+        <h2>Please wait while we process your pictures.</h2>
+        <span class="current">Compositing Your Beauty...</span>
+        <img src="" class="progress-preview">
+    </div>
+
+    <div class="page page-6">
+        <span class="results">RESULTS</span>
+        <span class="line"></span>
+        <img src="" class="final-image">
+        <div class="qr-code"></div>
+        <span class="caption">Scan for your<br>online copy</span>
+
+        <div class="text-offer o1">
+            <h1>
+                Your hard copy’s<br>
+                rolling off the<br>
+                press right now!<br>
+            </h1>
+
+            <h2>
+                Get an extra keychain<br>
+                for just $10.99<br>
+                <br>
+                →
+            </h2>
+
+            <button class="shop">
+                <img src="/assets/icons/cart.svg">
+                $10.99
+            </button>
+
+            <span class="skip">or skip this offer</span>
+        </div>
+
+        <div class="text-offer o2">
+            <h1>Thank you!</h1>
+
+            <h2>Your extra keychain
+                <br>is also on its way!
+                <br>Donate outside.
+                <br><br>
+                Bring all your belongings
+                <br>with you and have a nice
+                <br>day.
+            </h2>
+
+            <button class="leave-button">Leave</button>
+        </div>
+
+        <div class="text-offer o3">
+            <h1>Thank you!</h1>
+            <h2>
+                Bring all your belongings
+                <br>with you and have a nice
+                <br>day.
+            </h2>
+
+            <button class="leave-button">Leave</button>
+
+        </div>
+
+        <span class="countdown">120s</span>
+    </div>
+
+    <div class="purchase-confirm-overlap">
+        <h1>
+            Slide to Confirm Purchase
+        </h1>
+        <h2>
+            <img src="/assets/icons/price_tag.svg">$10.99</h2>
+        <input type="range" name="purchase-confirm" id="purchase-confirm" min="0" max="100" value="0">
+
+        <button>Cancel</button>
+    </div>
+
+    <div class="animation-captured"></div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="/js/ipad.js"></script>
+</body>
+
+</html>

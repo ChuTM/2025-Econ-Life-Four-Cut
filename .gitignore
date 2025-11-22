@@ -1,0 +1,59 @@
+# Environment variables (do not commit secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# Sensitive credentials & tokens (never commit these)
+/token.json
+/credentials.json
+*.pem
+*.key
+*.crt
+
+# Node.js dependencies & logs
+node_modules/
+**/node_modules/          # Aggressive: ignores node_modules in all subdirectories
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs (auto-generated, safe to ignore)
+/dist/
+/build/
+/out/
+/bin/
+
+# Uploads & generated files (user, app, or test generated)
+**/uploads/
+**/outputs/
+**/temp/
+**/tmp/
+
+# Editor & operating system files
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.sublime-*
+
+# Python build artifacts and virtual environments
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Docker files
+Dockerfile*
+.dockerignore
+.docker/
+
+# Individual files to ignore for security/consistency
+token.js
+token.json

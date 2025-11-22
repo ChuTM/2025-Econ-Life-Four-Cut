@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chu Tsz Ming",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "canvas": "^3.2.0",
+    "express": "^5.1.0",
+    "googleapis": "^166.0.0",
+    "multer": "^2.0.2",
+    "sharp": "^0.34.5",
+    "socket.io": "^4.8.1",
+    "socketio": "^1.0.0"
+  }
+}

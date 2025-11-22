@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Econ Open Day | Admin</title>
+    <link rel="stylesheet" href="/css/admin.css" />
+</head>
+
+<body>
+
+    <h2>Google Drive Authentication</h2>
+    <div class="flex">
+        <button id="google-auth">Sign-in with Google</button>
+        <span id="auth-status">Not connected</span>
+    </div>
+
+    <h2>Quick Actions</h2>
+    <div class="flex">
+        <button id="send-test">Send Test Message</button>
+        <button id="refresh-status">Refresh Status</button>
+        <button onclick="location.href='/'">Back</button>
+    </div>
+
+    <h2>Device Status</h2>
+    <div id="status">
+        <div>iPad: <span id="ipad-status" class="offline">Offline</span></div>
+        <div>iMac: <span id="imac-status" class="offline">Offline</span></div>
+        <div>PrinterPC: <span id="printerpc-status" class="offline">Offline</span></div>
+        <div>Admin: <span id="admin-status" class="offline">Offline</span></div>
+    </div>
+
+    <h2>Console</h2>
+    <div id="console">
+        <p class="console-server">------- Admin Console Ready -------</p>
+    </div>
+
+    <div class="flex">
+        <input id="command-input" type="text" placeholder="Send Command" />
+        <button id="send-command">Send</button>
+    </div>
+
+    <hr>
+
+    <div class="flex">
+        <button onclick="message(':ready')">:ready</button>
+        <button onclick="message(':start')">:start</button>
+        <button onclick="message(':countdown-2-capture')">:coutdown-2-capture</button>
+        <button onclick="message(':end')">:end</button>
+
+    </div>
+
+    <div class="flex">
+        <input id="message-input" type="text" placeholder="Send Message" />
+        <button id="send-message">Send</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+
+</html>

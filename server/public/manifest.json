@@ -1,0 +1,17 @@
+{
+	"short_name": "2025 Econ Life Four-Cut",
+	"name": "2025 Econ Life Four-Cut",
+	"author": "Ming Chu",
+	"id": "/",
+	"url": "/ipad.html",
+	"icons": [
+	],
+	"start_url": "/ipad.html",
+	"background_color": "#FFC0CB",
+	"display_override": ["fullscreen", "minimal-ui"],
+	"display": "standalone",
+	"scope": "/ipad.html",
+	"theme_color": "#FFC0CB",
+	"description": "iPad Client",
+	"screenshots": []
+}

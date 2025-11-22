@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>♡ My Life Four-Cut is here ♡</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@600;800&display=swap');
+
+		body {
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(135deg, #ffeaf6, #ffd1e9, #ffb8e0);
+			font-family: 'Noto Sans KR', 'Poppins', sans-serif;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			color: #ff6db0;
+		}
+
+		.container {
+			margin-top: 30px;
+			max-width: 400px;
+			width: 90%;
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 30px;
+			padding: 30px 20px;
+			box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+			text-align: center;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.container::before {
+			content: "♡ ♡ ♡";
+			position: absolute;
+			top: -20px;
+			left: 0;
+			right: 0;
+			font-size: 40px;
+			color: #ff99cc55;
+			letter-spacing: 30px;
+		}
+
+		h1 {
+			font-size: 28px;
+			color: #ff4791;
+			margin: 10px 0 5px;
+			text-shadow: 2px 2px 4px rgba(255, 71, 145, 0.2);
+		}
+
+		.subtitle {
+			font-size: 16px;
+			color: #ff8fc0;
+			margin-bottom: 25px;
+		}
+
+		.photo-strip {
+			background: linear-gradient(to bottom, #fff, #fff5fb);
+			padding: 15px 10px;
+			border-radius: 20px;
+			box-shadow: 0 8px 20px rgba(255, 105, 180, 0.25);
+			margin: 20px 0;
+		}
+
+		.photo-strip img {
+			width: 100%;
+			border-radius: 12px;
+			margin: 8px 0;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+
+		.loading {
+			font-size: 18px;
+			color: #ff99cc;
+		}
+
+		.heart {
+			color: #ff69b4;
+			animation: pulse 1.5s infinite;
+		}
+
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+			}
+
+			50% {
+				transform: scale(1.3);
+			}
+
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		.btn {
+			display: inline-block;
+			margin: 20px 8px 10px;
+			padding: 12px 25px;
+			background: #ff69b4;
+			color: white;
+			border-radius: 30px;
+			text-decoration: none;
+			font-weight: bold;
+			box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+			transition: all 0.3s;
+		}
+
+		.btn:hover {
+			transform: translateY(-3px);
+			background: #ff1493;
+		}
+
+		footer {
+			margin-top: 30px;
+			font-size: 12px;
+			color: #ff99cc;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container">
+		<h1><span class="heart">♡</span> Your Life Four-Cut is ready! <span class="heart">♡</span></h1>
+
+		<div class="photo-strip" id="photos">
+			<p class="loading">Loading your pretty photos...</p>
+		</div>
+
+		<a href="#" class="btn" id="downloadBtn" download>Save to phone</a>
+		<a href="javascript:void(0)" class="btn" onclick="share()">Share with friends</a>
+
+		<footer>&copy; 2025 Christian Alliance S. C. Chan Mem Col.</footer>
+	</div>
+
+	<script defer>
+		// Get ID from URL: ?l=xxxxxx
+		const params = new URLSearchParams(location.search);
+		const id = params.get('l');
+
+		if (!id) {
+			document.getElementById('photos').innerHTML = '<p>❌ No photo ID found~</p>';
+		} else {
+			const base = 'https://lh3.googleusercontent.com/d/';
+			const url = `${base}${id}`;
+
+			const img = new Image();
+			img.onload = function () {
+				document.getElementById('photos').innerHTML = `
+        <img src="${this.src}" alt="Your life four-cut."/>
+      `;
+				document.getElementById('downloadBtn').href = this.src;
+			};
+			img.onerror = function () {
+				document.getElementById('photos').innerHTML = '<p>Photo is still processing, please try again in a few minutes.</p>';
+			};
+			img.src = url;
+		}
+
+		function share() {
+			if (navigator.share) {
+				navigator.share({
+					title: 'My Photos',
+					url: location.href
+				});
+			} else {
+				prompt('Copy this link and send to your friends', location.href);
+			}
+		}
+	</script>
+
+</body>
+
+</html>

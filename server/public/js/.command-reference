@@ -1,0 +1,78 @@
+================================================================================
+DEVELOPER COMMAND REFERENCE (via Chat or Command Input)
+================================================================================
+
+Camera starts OFF. Use :ready to initialize, then :start to show.
+
+Core Camera Commands (Send as Chat Messages)
+:ready
+  → Starts camera stream (hidden & blurred). Prepares for :start.
+
+:start
+  → Unblurs and shows live feed. Emits :camera-ready
+
+:end
+  → Blurs the live feed (privacy mode)
+
+:stop
+  → Stops camera stream and hides video
+
+:countdown-[s]-capture
+  → Starts [s]-second countdown at center
+  → Applies radial blur mask (center clear)
+  → At 0: FREEZES video for 0.5s, plays shutter.mp3, captures → uploads → emits :camera-ready
+
+  Examples:
+  - :countdown-3-capture → 3 sec countdown + snap + freeze + click
+  - :countdown-5-capture → 5 sec countdown + snap + freeze + click
+
+:capture
+  → IMMEDIATE capture (no countdown)
+  → FREEZES video for 0.5s, plays shutter.mp3, captures → uploads → emits :camera-ready
+
+:frame-[frameID]-[numPictures]
+  → Selects frame with ID [frameID] (e.g., classic, modern)
+  → Sets number of pictures to take to [numPictures] (e.g., 1, 2, 4)
+
+  Examples:
+  - :frame-classic-4 → Selects "classic" frame, sets to take 4 pictures
+  - :frame-modern-2 → Selects "modern" frame, sets to take 2 pictures
+
+:filter-[JSON]
+  → Applies image filter using CSS filter properties
+  → Accepts valid CSS filter properties as JSON object
+
+  Examples:
+  - :filter-{"sepia":"50%","brightness":"120%"} → Applies sepia and brightness
+  - :filter-{"grayscale":"100%"} → Applies full grayscale
+
+:purchase-confirmed
+  → Confirms purchase completion
+  → Triggers transition to next screen on iPad
+
+:local-link-[url]
+  → Sends local image URL to connected devices
+  → Displays image with progressive unblur animation on iPad
+
+:google-drive-link-[url]
+  → Sends Google Drive image URL to connected devices
+  → Generates QR code for access and starts 2-minute countdown on iPad
+
+:print-[googledrivelink]
+  → Triggers print job for the image at the specified Google Drive link
+  → Sends print command to PrinterPC target
+  → Emits print status updates to console
+
+Admin Commands → Use: COMMAND -> TARGET
+Targets: iMac, iPad, PrinterPC, all
+
+Examples:
+  alert('Hi') -> iMac
+  document.body.style.background = '#f00' -> iPad
+  startCamera() -> all
+  printImage('https://drive.google.com/...') -> PrinterPC
+
+Note: Camera is horizontally flipped (mirror view). Capture preserves flip.
+Click on iMac to enter fullscreen mode.
+Click sound: assets/audio/shutter.mp3 (autoplay policy compliant)
+All logs in browser console (F12).
