@@ -295,27 +295,6 @@ $(".filter-button").addEventListener("click", () => {
 	startFilmingProcess(); // Begin capture sequence
 });
 
-// Purchase confirmation slider handler
-$("#purchase-confirm").addEventListener("change", (e) => {
-	if (e.target.value != 100) {
-		e.target.value = 0;
-		$(
-			".purchase-confirm-overlap"
-		).style.background = `rgba(247, 0, 0, 0.5)`;
-		return;
-	}
-
-	// Confirm purchase and proceed
-	$(".purchase-confirm-overlap").classList.remove("visible");
-	$(".o1").style.display = "none";
-	$(".o2").style.display = "flex";
-
-	socket.emit("chat message", {
-		name: deviceName,
-		msg: ":purchase-confirmed",
-	});
-});
-
 // Handle offer skip
 $(".text-offer .skip").addEventListener("click", () => {
 	$(".o1").style.display = "none";
@@ -528,6 +507,27 @@ socket.on("chat message", (data) => {
 		socket.emit("chat message", {
 			name: deviceName,
 			msg: `:print-${link}`,
+		});
+
+		// Purchase confirmation slider handler
+		$("#purchase-confirm").addEventListener("change", (e) => {
+			if (e.target.value != 100) {
+				e.target.value = 0;
+				$(
+					".purchase-confirm-overlap"
+				).style.background = `rgba(247, 0, 0, 0.5)`;
+				return;
+			}
+
+			// Confirm purchase and proceed
+			$(".purchase-confirm-overlap").classList.remove("visible");
+			$(".o1").style.display = "none";
+			$(".o2").style.display = "flex";
+
+			socket.emit("chat message", {
+				name: deviceName,
+				msg: `:purchase-confirmed-${link}`,
+			});
 		});
 
 		$(".page-5").style.display = "none";

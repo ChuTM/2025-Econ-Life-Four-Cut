@@ -6,78 +6,59 @@ const { exec } = require("child_process");
 const os = require("os");
 const readline = require("readline");
 
+// ==================== ⚙️ CONFIGURATION ====================
+
+// 1. YOUR DEFAULT URL (Hit Enter to use this)
+const DEFAULT_URL = "http://192.168.1.115:7721";
+
+// 2. SET FALSE TO PRINT FOR REAL
+const DEV_MODE = true;
+
+const deviceName = "PrinterPC";
+const tempDir = path.join(os.tmpdir(), "printerpc-mac");
+if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+
 const rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout,
 });
 
-// ==================== CONFIG ====================
-const deviceName = "PrinterPC";
-const tempDir = path.join(os.tmpdir(), "printerpc-mac");
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-
-// ==================== AIRPRINT-READY PRINTER DETECTION ====================
+// ==================== PRINTER DETECTION ====================
 function getL4260PrinterName(callback) {
-	exec("lpstat -p", (err, stdout) => {
-		if (err || !stdout) {
-			console.log(
-				"Cannot list printers. Is the L4260 on Wi-Fi and AirPrint enabled?"
-			);
-			return callback(null);
-		}
+	if (DEV_MODE) return callback("Mock_Epson_L4260_Series");
 
-		const lines = stdout.split("\n");
-		const printerNames = [];
+	exec("lpstat -e", (err, stdout) => {
+		if (err || !stdout) return callback(null);
+		const printers = stdout
+			.split("\n")
+			.map((p) => p.trim())
+			.filter(Boolean);
 
-		for (const line of lines) {
-			// Matches both: printer EPSON_L4260_Series is idle...
-			// and: printer "EPSON L4260 Series (AirPrint)" is idle...
-			const match = line.match(/printer\s+([^"\s]+)|printer\s+"([^"]+)"/);
-			if (match) {
-				const name = match[1] || match[2];
-				if (
-					name &&
-					(name.toLowerCase().includes("l4260") ||
-						name.toLowerCase().includes("4260"))
-				) {
-					printerNames.push(name);
-				}
-			}
-		}
-
-		if (printerNames.length === 0) {
-			console.log("EPSON L4260 not found!");
-			console.log("Available printers:");
-			console.log(stdout);
-			return callback(null);
-		}
-
-		// Prefer the clean name without (AirPrint) if both exist
-		const preferred =
-			printerNames.find((p) => !p.includes("(AirPrint)")) ||
-			printerNames[0];
-		console.log(`Found printer → ${preferred}`);
-		callback(preferred);
+		const match = printers.find(
+			(p) =>
+				p.toLowerCase().includes("l4260") ||
+				p.toLowerCase().includes("4260")
+		);
+		callback(match || null);
 	});
 }
 
-// ==================== REST OF YOUR CODE (unchanged, just better) ====================
-function getDirectImageUrl(rawUrl) {
-	const url = rawUrl.trim();
-	if (url.includes("lh3.googleusercontent.com/d/")) {
-		const clean = url.split("=")[0];
-		return clean + "=w2048-h2048";
-	}
-	return url;
-}
+// ==================== MAIN LOGIC ====================
+async function downloadAndPrint(imageID, printMode) {
 
-async function downloadAndPrint(imageUrl) {
-	const filepath = path.join(tempDir, `print_${Date.now()}.jpg`);
+	const cleanUrl = `https://lh3.googleusercontent.com/d/${imageID}`;
+
+	const filename = `job_${Date.now()}.jpg`;
+	const filepath = path.join(tempDir, filename);
+
+	const modeLabel =
+		printMode === "RECEIPT" ? "💰 RECEIPT (1/8)" : "🖼️  NORMAL (Full)";
 
 	try {
-		console.log("Downloading image...");
+		console.log(`⬇️  [${modeLabel}] Downloading image...`);
+
 		const response = await axios({
-			url: imageUrl,
+			url: cleanUrl,
 			method: "GET",
 			responseType: "stream",
 			timeout: 60000,
@@ -93,54 +74,71 @@ async function downloadAndPrint(imageUrl) {
 			response.data.on("error", reject);
 		});
 
-		console.log("Download complete → printing via AirPrint");
+		const stats = fs.statSync(filepath);
+		if (stats.size === 0) throw new Error("Empty file");
 
 		getL4260PrinterName((printerName) => {
 			if (!printerName) {
-				cleanup();
+				console.log("❌ No printer found.");
+				cleanup(filepath);
 				return;
 			}
 
-			const cmd = `lp -d "${printerName}" -o media=a4 -o fit-to-page -o landscape=no "${filepath}"`;
+			let options = `-o media=a4 -o landscape=no`;
+
+			if (printMode === "RECEIPT") {
+				options += ` -o scaling=35`; // ~1/8th size
+			} else {
+				options += ` -o fit-to-page`; // Full size
+			}
+
+			const cmd = `lp -d "${printerName}" ${options} "${filepath}"`;
+
+			if (DEV_MODE) {
+				console.log(`\n🛠️  [DEV_MODE] SKIPPING PHYSICAL PRINT.`);
+				console.log(`    Cmd: ${cmd}`);
+				cleanup(filepath);
+				return;
+			}
+
+			console.log(`🖨️  Sending to printer (${printMode})...`);
+
 			exec(cmd, (err, stdout, stderr) => {
-				if (err || stderr) {
-					console.log("Print failed:", err?.message || stderr);
-				} else {
-					console.log("Print job sent successfully via AirPrint!\n");
-				}
-				cleanup();
+				if (err) console.log("❌ Print Failed:", err.message);
+				else console.log("✅ Job sent successfully!");
+				cleanup(filepath);
 			});
 		});
-
-		function cleanup() {
-			setTimeout(() => {
-				if (fs.existsSync(filepath)) {
-					fs.unlinkSync(filepath);
-					console.log("Temp file cleaned up\n");
-				}
-			}, 15000);
-		}
 	} catch (err) {
-		console.log("Error:", err.message);
-		if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+		console.log("❌ Error:", err.message);
+		if (fs.existsSync(filepath)) cleanup(filepath);
 	}
 }
 
-// ==================== SOCKET.IO (unchanged) ====================
+function cleanup(filepath) {
+	setTimeout(() => {
+		if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+	}, 5000);
+}
+
+// ==================== SOCKET CONNECTION ====================
 let socket;
 async function start() {
+	// ALWAYS ask for URL now, even in Dev Mode
 	const socketUrl = await new Promise((resolve) => {
-		rl.question(
-			"Enter WebSocket server URL (e.g. http://192.168.1.100:3000): ",
-			(url) => {
-				url = url.trim();
-				rl.close();
-				resolve(url || "http://192.168.1.100:3000");
-			}
-		);
+		rl.question(`Enter Server URL (Default: ${DEFAULT_URL}): `, (url) => {
+			url = url.trim();
+			// If user types nothing, use the correct default
+			resolve(url || DEFAULT_URL);
+		});
 	});
 
-	console.log(`\nConnecting to: ${socketUrl}\n`);
+	// Close readline so it doesn't hang
+	// Note: We don't close rl completely if you want to reuse it,
+	// but here we are done with input.
+	// rl.close();
+
+	console.log(`\n🔌 Connecting to: ${socketUrl}\n`);
 	socket = io(socketUrl, { transports: ["websocket"], reconnection: true });
 
 	socket.on("connect", () => {
@@ -148,29 +146,41 @@ async function start() {
 			name: deviceName,
 			folder: "/" + deviceName.toLowerCase(),
 		});
-		console.log(
-			`Connected & registered as "${deviceName}"\nReady for :print- links!\n`
-		);
+		console.log(`🟢 Connected!`);
+		console.log(`   Waiting for: :print- OR :purchase-confirmed-`);
 	});
 
 	socket.on("chat message", async (data) => {
 		const msg = data.msg?.trim();
-		if (msg?.toLowerCase().startsWith(":print-")) {
-			const url = msg.slice(7).trim();
-			if (!url) return console.log("Empty URL");
-			console.log(`Print request → ${url}\n`);
-			await downloadAndPrint(getDirectImageUrl(url));
+		if (!msg) return;
+
+		const PREFIX_NORMAL = ":print-";
+		const PREFIX_RECEIPT = ":purchase-confirmed-";
+
+		if (msg.toLowerCase().startsWith(PREFIX_RECEIPT)) {
+			const url = msg.slice(PREFIX_RECEIPT.length).trim();
+			if (url) {
+				console.log(`----------------------------------------`);
+				console.log(`💰 Command: Purchase Confirmed`);
+				await downloadAndPrint(url, "RECEIPT");
+			}
+		} else if (msg.toLowerCase().startsWith(PREFIX_NORMAL)) {
+			const url = msg.slice(PREFIX_NORMAL.length).trim();
+			if (url) {
+				console.log(`----------------------------------------`);
+				console.log(`🖼️  Command: Standard Print`);
+				await downloadAndPrint(url, "NORMAL");
+			}
 		}
 	});
 
-	socket.on("disconnect", () => console.log("Disconnected"));
-	socket.on("connect_error", (e) =>
-		console.log("Connection error:", e.message)
+	socket.on("disconnect", () => console.log("🔴 Disconnected"));
+	socket.on("connect_error", (err) =>
+		console.log(`⚠️ Connect Error: ${err.message}`)
 	);
 }
 
-console.log("PrinterPC — AirPrint Ready (Epson L4260)\n");
+console.log(`PrinterPC - ${DEV_MODE ? "🛠️ TEST MODE" : "🖨️ LIVE MODE"}`);
 start();
 
-// Keep process alive
 setInterval(() => {}, 1 << 30);
