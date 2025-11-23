@@ -12,9 +12,6 @@ const server = http.createServer(app);
 const io = socketIo(server);
 const PORT = process.env.PORT || 7721;
 
-const SAVE_USER_PHOTOS = false;
-
-
 const localIP =
 	Object.values(require("os").networkInterfaces())
 		.flat()
@@ -295,18 +292,6 @@ function generateCompositeImage(
 					name: "Server",
 					msg: `:google-drive-link-${link}`,
 				});
-
-				if (!SAVE_USER_PHOTOS) {
-					// remove /uploads
-					const uploadDir = path.join(
-						__dirname,
-						"public",
-						"uploads",
-						String(id)
-					);
-
-					fs.rmSync(uploadDir, { recursive: true });
-				}
 			} else {
 				io.emit("chat message", {
 					name: "Server",
@@ -347,7 +332,38 @@ function generateUUID() {
 	);
 }
 
-let filterID = "default";
+let frameID = "default";
+
+function addToRecord(item, data) {
+	const tableID = id;
+
+	// Save to /records.json
+	const filePath = path.join(__dirname, `records.json`);
+
+	// if no
+	if (!fs.existsSync(filePath) || fs.statSync(filePath).size === 0) {
+		fs.writeFileSync(filePath, "[]"); // Create an empty JSON array if file doesn't exist
+	}
+
+	let records = JSON.parse(fs.readFileSync(filePath, "utf8"));
+
+	let recordFound = false;
+	for (let i = 0; i < records.length; i++) {
+		if (records[i].tableID === tableID) {
+			records[i][item] = data;
+			recordFound = true;
+			break;
+		}
+	}
+
+	if (!recordFound) {
+		const newRecord = { tableID };
+		newRecord[item] = data;
+		records.push(newRecord);
+	}
+
+	fs.writeFileSync(filePath, JSON.stringify(records));
+}
 
 // ---------- Socket.IO (control only) ----------
 io.on("connection", (socket) => {
@@ -378,7 +394,18 @@ io.on("connection", (socket) => {
 		io.emit("chat message", { name: data.name, msg: data.msg });
 
 		if (data.msg.startsWith(":frame-")) {
-			filterID = data.msg.split("-")[1];
+			frameID = data.msg.split("-")[1];
+
+			addToRecord("frame", frameID);
+		}
+
+		if (data.msg.startsWith(":filter-")) {
+			const filter = data.msg.replace(":filter-", "");
+			addToRecord("filter", filter);
+		}
+
+		if (data.msg.startsWith(":animation-started-")) {
+			addToRecord("image-count", ++n);
 		}
 
 		if (data.msg === ":start") {
@@ -392,6 +419,16 @@ io.on("connection", (socket) => {
 			});
 			// tell all clients the session ID
 			io.emit("session-id", id);
+
+			addToRecord("participated", true);
+		}
+
+		if (data.msg.startsWith(":purchase-confirmed")) {
+			addToRecord("purchase", true);
+		}
+
+		if (data.msg.startsWith(":print")) {
+			addToRecord("print", true);
 		}
 
 		if (data.msg === ":end") {
@@ -411,17 +448,17 @@ io.on("connection", (socket) => {
 				}
 			}
 
-			// get frame definition based on filterID (./frames/jsons/[id].json)
+			// get frame definition based on frameID (./frames/jsons/[id].json)
 
 			const frameDefinitionPath = path.join(
 				__dirname,
 				"frames",
 				"jsons",
-				`${filterID}.json`
+				`${frameID}.json`
 			);
 			if (!fs.existsSync(frameDefinitionPath)) {
 				console.error(
-					`Frame definition not found for filterID: ${filterID}`
+					`Frame definition not found for frameID: ${frameID}`
 				);
 				return;
 			}
