@@ -165,14 +165,30 @@ async function uploadToGoogleDrive(localPath) {
 			mimeType: "image/png",
 			body: fs.createReadStream(localPath),
 		};
+
+		// 1. Create the file
 		const driveRes = await drive.files.create({
 			resource: fileMetadata,
 			media: media,
 			fields: "id, webViewLink",
 		});
+
+		// 2. ALLOW ANYONE TO VIEW (Add Permissions)
+		await drive.permissions.create({
+			fileId: driveRes.data.id,
+			requestBody: {
+				role: "reader", // Allows viewing
+				type: "anyone", // Allows public access
+			},
+		});
+
+		// 3. Return the ID or Link
+		// Note: You can get the ID directly via driveRes.data.id
+		// instead of regexing the link, but keeping your logic below:
 		const link = driveRes.data.webViewLink.match(
 			/\/d\/([A-Za-z0-9_-]+)/
 		)[1];
+
 		return link;
 	} catch (err) {
 		console.error("Drive upload error:", err);
