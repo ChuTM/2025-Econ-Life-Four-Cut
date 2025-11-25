@@ -26,8 +26,8 @@
             <span class="frame" id="demo" data-pictures-required="4">
                 <img src="/assets/img/demo.png">
             </span>
-            <span class="frame" id="2" data-pictures-required="4">
-                <img src="/assets/img/4x2.png">
+            <span class="frame" id="frame1" data-pictures-required="4">
+                <img src="/assets/img/frame1.png">
             </span>
             <span class="frame" id="3" data-pictures-required="6">
                 <img src="/assets/img/3x2.png">
@@ -76,12 +76,40 @@
     </div>
 
     <div class="page page-5">
+        <div class="preview">
+            <canvas></canvas>
+        </div>
+        <button class="confirm-result-button">Confirm</button>
+
+        <div class="grid">
+            <div class="img img-preview-1">
+                <img src="" alt="">
+            </div>
+            <div class="img img-preview-2">
+                <img src="" alt="">
+            </div>
+            <div class="img img-preview-3">
+                <img src="" alt="">
+            </div>
+            <div class="img img-preview-4">
+                <img src="" alt="">
+            </div>
+            <div class="img img-preview-5">
+                <img src="" alt="">
+            </div>
+            <div class="img img-preview-6">
+                <img src="" alt="">
+            </div>
+        </div>
+    </div>
+
+    <div class="page page-6">
         <h2>Please wait while we process your pictures.</h2>
         <span class="current">Compositing Your Beauty...</span>
         <img src="" class="progress-preview">
     </div>
 
-    <div class="page page-6">
+    <div class="page page-7">
         <span class="results">RESULTS</span>
         <span class="line"></span>
         <img src="" class="final-image">
@@ -145,7 +173,8 @@
             Slide to Confirm Purchase
         </h1>
         <h2>
-            <img src="/assets/icons/price_tag.svg">$10.99</h2>
+            <img src="/assets/icons/price_tag.svg">$10.99
+        </h2>
         <input type="range" name="purchase-confirm" id="purchase-confirm" min="0" max="100" value="0">
 
         <button>Cancel</button>
@@ -157,6 +186,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="/js/ipad.js"></script>
+    <script src="/js/voice-navigators.js"></script>
 </body>
 
 </html>

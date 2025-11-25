@@ -56,7 +56,25 @@ $(".frame").forEach((e) => {
 	});
 });
 
-let selectedFrame, framePictureAmount; // Selected frame properties
+let selectedFrame,
+	framePictureAmount = 4; // Selected frame properties
+
+let frameDetail = {};
+
+async function loadFrame(n) {
+	return new Promise((r) => {
+		fetch(`/frames/jsons/${n}.json`)
+			.then((response) => response.json())
+			.then((data) => {
+				frameDetail = data;
+				r(data);
+				console.log("Frame details loaded:", frameDetail);
+			})
+			.catch((error) => {
+				console.error("Error loading frame details:", error);
+			});
+	});
+}
 
 // Handle frame confirmation - navigate to filter selection
 $(".frame-button").addEventListener("click", () => {
@@ -71,6 +89,8 @@ $(".frame-button").addEventListener("click", () => {
 		name: deviceName,
 		msg: `:frame-${selectedFrame}-${framePictureAmount}`,
 	});
+
+	loadFrame(selectedFrame);
 
 	$(".page-3").style.display = "block";
 	$(".page-2").style.display = "none";
@@ -344,7 +364,7 @@ function startFilmingProcess() {
 		};
 
 		// Update UI with progress
-		fractionElement.textContent = `${index + 1} / ${framePictureAmount}`;
+		fractionElement.textContent = `${index + 1} / 6`;
 		countdownElement.textContent = countdown;
 		$(".unit").textContent = "seconds";
 
@@ -369,7 +389,8 @@ function startFilmingProcess() {
 
 				// Continue sequence or finish
 				setTimeout(() => {
-					if (index < framePictureAmount) {
+					if (index < 6) {
+						// TAKE 6 PHOTOS
 						countdownStarts();
 					} else {
 						// All captures complete
@@ -378,6 +399,7 @@ function startFilmingProcess() {
 							msg: `:end`,
 						});
 						$(".page-5").style.display = "block";
+						initPage5();
 						$(".page-4").style.display = "none";
 					}
 				}, 5000);
@@ -445,6 +467,132 @@ socket.on("command", (cmd) => {
 	}
 });
 
+let previewPhotos = [];
+
+const refineImageLink = (l) => l.replace("./public", "");
+
+async function renderPreviewToCanvas(frameDef, imageMap) {
+	const canvas = document.querySelector(".page-5 .preview canvas");
+	if (!canvas) return;
+
+	const PREVIEW_W = 480;
+	const PREVIEW_H = 715;
+	const REAL_W = frameDef.Resolution.w; // 1440
+	const REAL_H = frameDef.Resolution.h; // 2146
+
+	const ctx = canvas.getContext("2d");
+
+	// ——— 1. Draw full-res version on a hidden offscreen canvas ———
+	const offscreen = new OffscreenCanvas(REAL_W, REAL_H);
+	const offCtx = offscreen.getContext("2d");
+
+	const load = (src) =>
+		new Promise((res, rej) => {
+			const img = new Image();
+			img.onload = () => res(img);
+			img.onerror = rej;
+			img.crossOrigin = "anonymous";
+			img.src = src;
+		});
+
+	const drawCover = (img, x, y, w, h) => {
+		const scale = Math.max(w / img.width, h / img.height);
+		const sw = w / scale;
+		const sh = h / scale;
+		const sx = (img.width - sw) / 2;
+		const sy = (img.height - sh) / 2;
+		offCtx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+	};
+
+	// background
+	const bg = await load(refineImageLink(frameDef.background));
+	offCtx.drawImage(bg, 0, 0, REAL_W, REAL_H);
+
+	// photos
+	for (const item of frameDef.images) {
+		const src = imageMap[item.src];
+		if (!src) {
+			offCtx.fillStyle = "#cccccc";
+			offCtx.fillRect(item.x, item.y, item.w, item.h);
+			continue;
+		}
+		try {
+			const photo = await load(src);
+			drawCover(photo, item.x, item.y, item.w, item.h);
+		} catch (e) {
+			offCtx.fillStyle = "#cccccc";
+			offCtx.fillRect(item.x, item.y, item.w, item.h);
+		}
+	}
+
+	// foreground
+	const fg = await load(refineImageLink(frameDef.foreground));
+	offCtx.drawImage(fg, 0, 0, REAL_W, REAL_H);
+
+	// ——— 2. Downscale the perfect full-res result to preview size ———
+	canvas.width = PREVIEW_W;
+	canvas.height = PREVIEW_H;
+	ctx.imageSmoothingEnabled = true;
+	ctx.imageSmoothingQuality = "high";
+	ctx.drawImage(offscreen, 0, 0, REAL_W, REAL_H, 0, 0, PREVIEW_W, PREVIEW_H);
+}
+
+// Page 5 - Photo Selection
+
+let selectedImages = new Array(framePictureAmount).fill(null); // framePictureAmount
+let selectedImageMap = {};
+
+function initPage5() {
+	renderPreviewToCanvas(frameDetail, {});
+	let index = 0;
+	$(".page-5>.grid>.img").forEach((e) => {
+		e.querySelector("img").src = previewPhotos[index];
+		index++;
+		e.addEventListener("click", () => {
+			const actualSrc = e.querySelector("img").src; // real uploaded URL
+
+			const alreadyIndex = selectedImages.indexOf(actualSrc);
+
+			if (alreadyIndex !== -1) {
+				// ——— DESELECT ———
+				selectedImages[alreadyIndex] = null;
+
+				e.classList.remove("selected");
+
+				// Find which placeholder was using this image and clear it
+				const placeholderKey = Object.keys(selectedImageMap).find(
+					(key) => selectedImageMap[key] === actualSrc
+				);
+				if (placeholderKey) {
+					selectedImageMap[placeholderKey] = null;
+				}
+			} else {
+				// ——— SELECT ———
+				const emptySlotIndex = selectedImages.indexOf(null);
+				e.classList.add("selected");
+
+				if (emptySlotIndex !== -1) {
+					// Fill the first available frame slot
+					selectedImages[emptySlotIndex] = actualSrc;
+
+					// Assign this real image to the corresponding placeholder
+					const placeholderKey = `{{image-${emptySlotIndex + 1}}}`;
+					selectedImageMap[placeholderKey] = actualSrc;
+				}
+			}
+
+			renderPreviewToCanvas(frameDetail, selectedImageMap);
+		});
+	});
+
+	$(".confirm-result-button").addEventListener("click", () => {
+		socket.emit("chat message", {
+			name: deviceName,
+			msg: `:generate-${JSON.stringify(selectedImages)}`,
+		});
+	});
+}
+
 // Handle incoming chat messages
 socket.on("chat message", (data) => {
 	consoleLog(`Chat from ${data.name}: ${data.msg}`);
@@ -453,9 +601,11 @@ socket.on("chat message", (data) => {
 	// Handle animation notification from iMac
 	if (msg.startsWith(":animation-started-")) {
 		const url = msg.replace(":animation-started-", "");
+		const previewLink = url.replace(".png", "-preview.webp");
+		previewPhotos.push(url);
 		document.body.style.setProperty(
 			"--captured-image",
-			`url(${url.replace(".png", "-preview.webp")})`
+			`url(${previewLink})`
 		);
 
 		// Show capture animation
@@ -482,18 +632,21 @@ socket.on("chat message", (data) => {
 	if (msg.startsWith(":local-link-")) {
 		const link = msg.replace(":local-link-", "");
 
-		$(".page-5 .current").textContent = `Making it available online...`;
+		$(".page-5").style.display = "none";
+		$(".page-6").style.display = "block";
 
-		$(".page-5 img").src = link;
-		$(".page-6 .final-image").src = link;
+		$(".page-6 .current").textContent = `Making it available online...`;
+
+		$(".page-6 img").src = link;
+		$(".page-7 .final-image").src = link;
 
 		// Apply reveal animation (reduce blur)
 		let blur = 20;
 		const interval = setInterval(() => {
-			$(".page-5 img").style.filter = `blur(${blur}px)`;
+			$(".page-6 img").style.filter = `blur(${blur}px)`;
 			blur = Math.max(0, blur - 2);
 			if (blur === 0) {
-				$(".page-5 img").style.filter = `blur(0px)`;
+				$(".page-6 img").style.filter = `blur(0px)`;
 				clearInterval(interval);
 			}
 		}, 500);
@@ -530,13 +683,13 @@ socket.on("chat message", (data) => {
 			});
 		});
 
-		$(".page-5").style.display = "none";
-		$(".page-6").style.display = "block";
+		$(".page-6").style.display = "none";
+		$(".page-7").style.display = "block";
 
 		// Countdown to page refresh
 		let countdown = 120;
 		setInterval(() => {
-			$(".page-6 .countdown").textContent = `${countdown}s`;
+			$(".page-7 .countdown").textContent = `${countdown}s`;
 			countdown--;
 			if (countdown === 0) location.reload();
 		}, 1000);

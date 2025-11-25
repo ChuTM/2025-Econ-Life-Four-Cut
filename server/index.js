@@ -447,8 +447,29 @@ io.on("connection", (socket) => {
 			addToRecord("print", true);
 		}
 
-		if (data.msg === ":end") {
-			// remove all files -preview.webp in uploads/sessionId
+		if (data.msg.startsWith(":generate-")) {
+			// Extract the JSON array part after ":generate-"
+			const jsonPart = data.msg.slice(10); // ":generate-".length === 10
+
+			let imagePaths = [];
+			try {
+				imagePaths = JSON.parse(jsonPart);
+				if (!Array.isArray(imagePaths)) throw new Error("Not an array");
+			} catch (err) {
+				console.error(
+					"Invalid :generate- command - JSON array expected",
+					err
+				);
+				return;
+			}
+
+			// Optional: basic validation (e.g. max 10 images, only strings, etc.)
+			if (imagePaths.length === 0 || imagePaths.length > 20) {
+				console.error("Invalid number of images:", imagePaths.length);
+				return;
+			}
+
+			// --- 1. Clean up old preview files ---
 			const uploadDir = path.join(
 				__dirname,
 				"public",
@@ -464,14 +485,15 @@ io.on("connection", (socket) => {
 				}
 			}
 
-			// get frame definition based on frameID (./frames/jsons/[id].json)
-
+			// --- 2. Load frame definition ---
 			const frameDefinitionPath = path.join(
 				__dirname,
+				"public",
 				"frames",
 				"jsons",
 				`${frameID}.json`
 			);
+
 			if (!fs.existsSync(frameDefinitionPath)) {
 				console.error(
 					`Frame definition not found for frameID: ${frameID}`
@@ -483,18 +505,47 @@ io.on("connection", (socket) => {
 				fs.readFileSync(frameDefinitionPath, "utf8")
 			);
 
+			// --- 3. Build imageMap from the received array ---
 			const imageMap = {};
-			imagePathMap.forEach((imgPath, index) => {
-				imageMap[`{{image-${index + 1}}}`] = imgPath;
+			imagePaths.forEach((imgPath, index) => {
+				// Sanitize / normalize the path to prevent directory traversal
+				const safePath = imgPath.split('/uploads/')[1];
+				const fullPath = path.join(
+					__dirname,
+					"public",
+					"uploads",
+					safePath
+				);
+
+				// Optional: extra security - ensure it really exists and is inside the session folder
+				if (
+					!fs.existsSync(fullPath) ||
+					!fullPath.startsWith(uploadDir + path.sep)
+				) {
+					console.warn(
+						`Image not found or access denied: ${fullPath}`
+					);
+					return;
+				}
+
+				imageMap[`{{image-${index + 1}}}`] = fullPath; // use absolute path for generateCompositeImage
 			});
 
-			// generate composite image
+			// If no valid images were mapped, abort
+			if (Object.keys(imageMap).length === 0) {
+				console.error("No valid images provided for generation");
+				return;
+			}
+
+			// --- 4. Generate the composite ---
+			const outputFilename = `output_${id}.jpg`;
+			const outputDir = path.join(__dirname, "public", "outputs");
 
 			generateCompositeImage(
 				frameDefinition,
 				imageMap,
-				`output_${id}.jpg`,
-				path.join("public", "outputs")
+				outputFilename,
+				outputDir
 			);
 		}
 	});

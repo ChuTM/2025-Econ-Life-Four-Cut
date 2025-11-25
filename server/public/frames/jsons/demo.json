@@ -1,7 +1,7 @@
 {
 	"name": "Demo Frame 4x2",
-	"background": "./frames/images/any.png",
-	"foreground": "./frames/images/demo-fore.png",
+	"background": "./public/frames/images/any.png",
+	"foreground": "./public/frames/images/demo-fore.png",
 	"Resolution": {
 		"w": 1440,
 		"h": 2146
