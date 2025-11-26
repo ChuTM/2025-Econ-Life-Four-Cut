@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC Life Four-Cut • Your Photos</title>
+
+    <!-- Same resources as your main page -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #111111;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .photo-wrapper {
+            max-width: 100%;
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            background: #000;
+        }
+
+        .photo-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .tip {
+            margin-top: 30px;
+            color: #cccccc;
+            font-size: 0.95rem;
+        }
+
+        .tip a {
+            color: #D4AF37;
+            text-decoration: none;
+        }
+
+        .tip a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            font-size: 1.1rem;
+            color: #D4AF37;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-top: 20px;
+        }
+
+        footer {
+            padding: 40px 20px 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* Same scroll animation as main site */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .8s ease, transform .8s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scc {
+            width: 50px;
+            margin: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/"><img src="./assets/scc.svg" class="scc"></a>
+    <div class="container">
+        <h1 class="animate-on-scroll">Your Four-Cut Photos</h1>
+
+        <div id="loading" class="loading animate-on-scroll">Loading your photos…</div>
+
+        <div id="photoWrapper" class="photo-wrapper animate-on-scroll" style="display:none;">
+            <img id="thePhoto" src="" alt="Your four-cut photo strip">
+        </div>
+
+        <div id="error" class="error" style="display:none;">
+            Oops! Unable to load the photo.<br>Please check the link or try again later.
+        </div>
+
+        <p class="tip animate-on-scroll">
+            Long-press (or right-click) to save • <a id="downloadLink" download>Download Full Size</a>
+        </p>
+    </div>
+
+    <footer>
+        &copy; SCC Info Day/Open Day Info Tech Organising Team.
+    </footer>
+
+    <script>
+        // Get Drive ID from ?l=
+        const params = new URLSearchParams(location.search);
+        const driveId = params.get('l');
+
+        const img = document.getElementById('thePhoto');
+        const wrapper = document.getElementById('photoWrapper');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const dlLink = document.getElementById('downloadLink');
+
+        if (!driveId) {
+            loading.style.display = 'none';
+            error.textContent = 'No photo link found. Please use a valid URL.';
+            error.style.display = 'block';
+        } else {
+
+            const imageUrl = `https://lh3.googleusercontent.com/d/${driveId}`;
+
+            img.src = imageUrl;
+            dlLink.href = imageUrl;
+
+            img.onload = () => {
+                loading.style.display = 'none';
+                wrapper.style.display = 'block';
+            };
+
+            img.onerror = () => {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            };
+        }
+        // Scroll animation (same as main page)
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>

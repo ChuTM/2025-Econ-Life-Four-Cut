@@ -2,177 +2,1007 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>♡ My Life Four-Cut is here ♡</title>
-	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@600;800&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCC Life Four-Cut</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Basic and Global Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-		body {
-			margin: 0;
-			padding: 0;
-			background: linear-gradient(135deg, #ffeaf6, #ffd1e9, #ffb8e0);
-			font-family: 'Noto Sans KR', 'Poppins', sans-serif;
-			min-height: 100vh;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			color: #ff6db0;
-		}
+        html {
+            scroll-behavior: smooth;
+            /* Smooth scrolling */
+        }
 
-		.container {
-			margin-top: 30px;
-			max-width: 400px;
-			width: 90%;
-			background: rgba(255, 255, 255, 0.95);
-			border-radius: 30px;
-			padding: 30px 20px;
-			box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
-			text-align: center;
-			position: relative;
-			overflow: hidden;
-		}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+            color: #333333;
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-top: 80px;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            /* Space for fixed button */
+        }
 
-		.container::before {
-			content: "♡ ♡ ♡";
-			position: absolute;
-			top: -20px;
-			left: 0;
-			right: 0;
-			font-size: 40px;
-			color: #ff99cc55;
-			letter-spacing: 30px;
-		}
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            /* Optimized container width */
+            margin: 0 auto;
+            padding: 0 25px;
+            /* Mobile-friendly padding */
+        }
 
-		h1 {
-			font-size: 28px;
-			color: #ff4791;
-			margin: 10px 0 5px;
-			text-shadow: 2px 2px 4px rgba(255, 71, 145, 0.2);
-		}
+        /* --- Fixed Booking Button (Replaces Navigation Bar) --- */
+        .booking-btn {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            padding: 12px 30px;
+            border-radius: 50px;
+            /* More rounded button */
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
 
-		.subtitle {
-			font-size: 16px;
-			color: #ff8fc0;
-			margin-bottom: 25px;
-		}
+        .booking-btn:hover {
+            background-color: #111111;
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
 
-		.photo-strip {
-			background: linear-gradient(to bottom, #fff, #fff5fb);
-			padding: 15px 10px;
-			border-radius: 20px;
-			box-shadow: 0 8px 20px rgba(255, 105, 180, 0.25);
-			margin: 20px 0;
-		}
+        .booking-btn i {
+            margin-right: 8px;
+        }
 
-		.photo-strip img {
-			width: 100%;
-			border-radius: 12px;
-			margin: 8px 0;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		}
+        /* --- Hero Section --- */
+        .hero {
+            height: calc(100vh - 80px);
+            /* Subtract height of top button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-		.loading {
-			font-size: 18px;
-			color: #ff99cc;
-		}
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.55);
+            z-index: -1;
+            animation: subtleZoom 25s infinite alternate;
+        }
 
-		.heart {
-			color: #ff69b4;
-			animation: pulse 1.5s infinite;
-		}
+        @keyframes subtleZoom {
+            0% {
+                transform: scale(1);
+            }
 
-		@keyframes pulse {
-			0% {
-				transform: scale(1);
-			}
+            100% {
+                transform: scale(1.05);
+            }
+        }
 
-			50% {
-				transform: scale(1.3);
-			}
+        .hero-content {
+            max-width: 700px;
+            padding: 20px;
+        }
 
-			100% {
-				transform: scale(1);
-			}
-		}
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            /* Responsive font size */
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
 
-		.btn {
-			display: inline-block;
-			margin: 20px 8px 10px;
-			padding: 12px 25px;
-			background: #ff69b4;
-			color: white;
-			border-radius: 30px;
-			text-decoration: none;
-			font-weight: bold;
-			box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
-			transition: all 0.3s;
-		}
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            color: #E0E0E0;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
 
-		.btn:hover {
-			transform: translateY(-3px);
-			background: #ff1493;
-		}
+        .btn {
+            display: inline-block;
+            background-color: transparent;
+            color: #FFFFFF;
+            border: 1px solid #FFFFFF;
+            padding: 15px 35px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
 
-		footer {
-			margin-top: 30px;
-			font-size: 12px;
-			color: #ff99cc;
-		}
-	</style>
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+            transform: skewX(-25deg);
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background-color: #FFFFFF;
+            color: #111111;
+        }
+
+        /* --- About Us --- */
+        .about {
+            padding: 120px 0;
+        }
+
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            /* Mobile-first, vertical arrangement */
+            gap: 60px;
+        }
+
+        @media (min-width: 992px) {
+            .about-content {
+                flex-direction: row;
+                align-items: center;
+                gap: 80px;
+            }
+        }
+
+        .about-text,
+        .about-image {
+            flex: 1;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #111111;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+            text-align: left;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background-color: #D4AF37;
+        }
+
+        .about-text p {
+            color: #666666;
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+        }
+
+        /* --- New: Team Introduction --- */
+        .team-intro {
+            margin-top: 80px;
+            text-align: center;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .team-member h4 {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 5px;
+        }
+
+        .team-member p {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        /* --- Services --- */
+        .services {
+            padding: 120px 0;
+            background-color: #F9F9F9;
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .services-header p {
+            max-width: 700px;
+            margin: 20px auto 0;
+            color: #666666;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            /* More compact grid */
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: #FFFFFF;
+            padding: 50px 30px;
+            text-align: center;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        /* --- Fixed Service Card Hover Effects --- */
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .service-card:hover .service-icon {
+            background-color: #111111;
+            color: #FFFFFF;
+            transform: scale(1.1);
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37;
+            transition: width 0.3s ease;
+        }
+
+        .service-card:hover::before {
+            width: 100%;
+        }
+
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            background-color: #F0F0F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-icon i {
+            font-size: 2rem;
+            color: #111111;
+        }
+
+        .service-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .service-card p {
+            color: #777777;
+            font-size: 0.95rem;
+        }
+
+        /* --- Process --- */
+        .process {
+            padding: 120px 0;
+        }
+
+        .process-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .process-header p {
+            max-width: 700px;
+            margin: 20px auto 0;
+            color: #666666;
+        }
+
+        .process-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+        }
+
+        @media (min-width: 768px) {
+            .process-steps {
+                flex-direction: row;
+                justify-content: space-between;
+                position: relative;
+                gap: 0;
+            }
+
+            .process-steps::before {
+                content: '';
+                position: absolute;
+                top: 50px;
+                left: 10%;
+                right: 10%;
+                height: 1px;
+                background-color: #EEEEEE;
+                z-index: 1;
+            }
+        }
+
+        .process-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            padding: 0 20px;
+        }
+
+        .step-number {
+            width: 100px;
+            height: 100px;
+            background-color: #FFFFFF;
+            border: 1px solid #EEEEEE;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #111111;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-number::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #D4AF37;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+            z-index: -1;
+        }
+
+        .process-step:hover .step-number {
+            color: #FFFFFF;
+            border-color: #D4AF37;
+        }
+
+        .process-step:hover .step-number::after {
+            transform: translateY(0);
+        }
+
+        .process-step h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .process-step p {
+            color: #777777;
+            font-size: 0.9rem;
+        }
+
+        /* --- Early Bird Registration --- */
+        .early-bird {
+            padding: 120px 0;
+            background-color: #111111;
+            color: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .early-bird::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://placehold.co/1920x1080/222222/FFFFFF?text=EARLY+BIRD&font=playfair');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .early-bird .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .early-bird-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .early-bird .section-title {
+            color: #FFFFFF;
+        }
+
+        .early-bird p {
+            color: #E0E0E0;
+            margin: 25px 0 35px;
+            font-size: 1.05rem;
+        }
+
+        .early-bird-form {
+            display: flex;
+            flex-direction: column;
+            /* Mobile-first, vertical arrangement */
+            gap: 15px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .early-bird-form {
+                flex-direction: row;
+                gap: 20px;
+            }
+        }
+
+        .early-bird-form input {
+            flex: 1;
+            padding: 15px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .early-bird-form input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .early-bird-form button {
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 2px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .early-bird-form button:hover {
+            background-color: #FFFFFF;
+            color: #111111;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            margin-top: 20px;
+            color: #D4AF37;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #111111;
+            color: #FFFFFF;
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-col h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 1px;
+            background-color: #555555;
+        }
+
+        .footer-col p,
+        .footer-col a {
+            color: #AAAAAA;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .footer-col a:hover {
+            color: #FFFFFF;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #222222;
+            color: #FFFFFF;
+            text-align: center;
+            line-height: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background-color: #D4AF37;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #222222;
+            color: #666666;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* --- Animation Keyframes --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Scroll Animation Classes --- */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Different delays for different blocks to create a layered effect */
+        .services-grid .service-card:nth-child(2),
+        .process-steps .process-step:nth-child(2) {
+            transition-delay: 0.1s;
+        }
+
+        .services-grid .service-card:nth-child(3),
+        .process-steps .process-step:nth-child(3) {
+            transition-delay: 0.2s;
+        }
+
+        .services-grid .service-card:nth-child(4) {
+            transition-delay: 0.3s;
+        }
+
+        .scc {
+            width: 50px;
+            margin: 1.5rem;
+        }
+
+        .nowrap {
+            white-space: nowrap;
+        }
+
+        /* Enhanced Fixed Booking Button with slide-in & scroll behavior */
+        .booking-btn {
+            position: fixed;
+            top: -100px;
+            /* Start hidden above the viewport */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #D4AF37;
+            color: #FFFFFF;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+        }
+
+        /* Visible state (slides down) */
+        .booking-btn.visible {
+            top: 20px;
+        }
+
+        /* Hidden when scrolled past hero */
+        .booking-btn.hide-on-scroll {
+            top: -100px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .booking-btn:hover {
+            background-color: #111111;
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
 </head>
 
 <body>
+    <img src="./assets/scc.svg" class="scc">
 
-	<div class="container">
-		<h1><span class="heart">♡</span> Your Life Four-Cut is ready! <span class="heart">♡</span></h1>
+    <!-- Fixed Booking Button -->
+    <a href="#early-bird" class="booking-btn">
+        <i class="fas fa-calendar-alt"></i> Book Now
+    </a>
 
-		<div class="photo-strip" id="photos">
-			<p class="loading">Loading your pretty photos...</p>
-		</div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content animate-on-scroll">
+            <h1>THE ART OF CAPTURE</h1>
+            <p>Experience the automation</p>
+            <a href="#services" class="btn">Explore Services</a>
+        </div>
+    </section>
 
-		<a href="#" class="btn" id="downloadBtn" download>Save to phone</a>
-		<a href="javascript:void(0)" class="btn" onclick="share()">Share with friends</a>
+    <!-- About Us -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text animate-on-scroll">
+                    <h2 class="section-title">This Project</h2>
+                    <p>Visitors may capture four‑cut photo strips, personalise them with themed frames and filters,
+                        receive digital copies via QR code, and take away both a printed strip and a specially crafted
+                        keyring featuring a miniature photo with a sound effect.
+                    </p>
+                </div>
+                <div class="about-image animate-on-scroll">
+                    <img src="https://placehold.co/800x1000/e8f4f8/111111?text=BOOTH&font=playfair"
+                        alt="Our Photo Booth">
+                </div>
+            </div>
+            <br>
+            <div class="about-content">
+                <div class="about-text animate-on-scroll">
+                    <h2 class="section-title">Finding Our Booth</h2>
+                    <p>
+                        We are located at the <b class="nowrap">Covered-Playground</b>, SCC<br> on <b>28-29 Nov
+                            2025</b>.
+                    </p>
+                </div>
+            </div>
 
-		<footer>&copy; 2025 Christian Alliance S. C. Chan Mem Col.</footer>
-	</div>
+            <!-- New: Team Introduction Section -->
+            <div class="team-intro animate-on-scroll">
+                <h2 class="section-title">Meet The Team</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <h4>Name Here</h4>
+                        <p>Director</p>
+                    </div>
+                    <div class="team-member">
+                        <h4>Name Here</h4>
+                        <p>Chief Designer</p>
+                    </div>
+                    <div class="team-member">
+                        <h4>Name Here</h4>
+                        <p>Technical Director</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-	<script defer>
-		// Get ID from URL: ?l=xxxxxx
-		const params = new URLSearchParams(location.search);
-		const id = params.get('l');
+    <!-- Services -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="services-header animate-on-scroll">
+                <h2 class="section-title">Our Services</h2>
+                <p style="text-align: left;">Each service is designed to provide an unparalleled experience, blending
+                    innovation with
+                    sophistication to create lasting memories.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Automated Capture</h3>
+                    <p>Four perfectly timed shots, sequentially captured by our high-definition camera system, ensuring
+                        every expression is flawlessly preserved.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <h3>Artisanal Frames</h3>
+                    <p>Exclusive limited-edition frames designed by our in-house artists, allowing you to personalize
+                        your photos.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h3>High-Standard Prints</h3>
+                    <p>Your photos are printed on photo paper, ensuring your
+                        memories stand the test of time.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <div class="service-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3>Digital Concierge</h3>
+                    <p>Instant access to high-resolution digital copies via a personalized QR code, sent to your device
+                        for immediate sharing and archiving.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-		if (!id) {
-			document.getElementById('photos').innerHTML = '<p>❌ No photo ID found~</p>';
-		} else {
-			const base = 'https://lh3.googleusercontent.com/d/';
-			const url = `${base}${id}`;
+    <!-- Process -->
+    <section class="process" id="process">
+        <div class="container">
+            <div class="process-header animate-on-scroll">
+                <h2 class="section-title">The Experience</h2>
+                <p style="text-align: left;">From selection to possession, a seamless journey designed to be as
+                    enjoyable as the memories you'll
+                    create.</p>
+            </div>
+            <div class="process-steps">
+                <div class="process-step animate-on-scroll">
+                    <div class="step-number">1</div>
+                    <h3>Choose Your Style</h3>
+                    <p>Select from our curated collection of frames and filters to match your event's aesthetic.</p>
+                </div>
+                <div class="process-step animate-on-scroll">
+                    <div class="step-number">2</div>
+                    <h3>Strike a Pose</h3>
+                    <p>Our intuitive interface guides you through four poses, capturing natural, candid shots with
+                        perfect timing.</p>
+                </div>
+                <div class="process-step animate-on-scroll">
+                    <div class="step-number">3</div>
+                    <h3>Preview & Confirm</h3>
+                    <p>View your photos on our high-definition display. Confirm your selection with a simple tap.</p>
+                </div>
+                <div class="process-step animate-on-scroll">
+                    <div class="step-number">4</div>
+                    <h3>Receive Your Memories</h3>
+                    <p>Within moments, receive your printed photo strip and keychain. Scan the QR code to get
+                        your digital copies.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-			const img = new Image();
-			img.onload = function () {
-				document.getElementById('photos').innerHTML = `
-        <img src="${this.src}" alt="Your life four-cut."/>
-      `;
-				document.getElementById('downloadBtn').href = this.src;
-			};
-			img.onerror = function () {
-				document.getElementById('photos').innerHTML = '<p>Photo is still processing, please try again in a few minutes.</p>';
-			};
-			img.src = url;
-		}
+    <!-- Early Bird Registration -->
+    <section class="early-bird" id="early-bird">
+        <div class="container">
+            <div class="early-bird-content animate-on-scroll">
+                <h2 class="section-title">Early Bird Registration</h2>
+                <p>Be among the first to experience and enjoy exclusive benefits. Register now to secure
+                    priority access and special offers for your upcoming event.</p>
+                <form class="early-bird-form" id="earlyBirdForm">
+                    <h1 id="code"></h1>
+                    <button type="submit">Get your code</button>
+                </form>
+                <div class="success-message" id="successMessage">Thank you for registering! You may screenshot this
+                    page.</div>
+            </div>
+        </div>
+    </section>
 
-		function share() {
-			if (navigator.share) {
-				navigator.share({
-					title: 'My Photos',
-					url: location.href
-				});
-			} else {
-				prompt('Copy this link and send to your friends', location.href);
-			}
-		}
-	</script>
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="copyright animate-on-scroll">
+                &copy; SCC Info Day/Open Day Info Tech Organising Team.
+            </div>
+        </div>
+    </footer>
 
+    <script>
+        // Unique key for this specific booth/event
+        const STORAGE_KEY = 'scc_fourcut_earlybird_code';
+
+        // Early Bird Registration Logic with localStorage
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('earlyBirdForm');
+            const codeDisplay = document.getElementById('code');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const successMessage = document.getElementById('successMessage');
+
+            // Check if user already has a code
+            const savedCode = localStorage.getItem(STORAGE_KEY);
+
+            if (savedCode) {
+                // User already registered — show code and disable form
+                codeDisplay.innerText = savedCode;
+                submitBtn.style.display = 'none';
+                successMessage.style.opacity = '1';
+                successMessage.innerHTML = 'You are already registered! Your code is shown above.';
+            } else {
+                // First time — allow registration
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Generate 6-digit code
+                    const newCode = String(Math.floor(100000 + Math.random() * 900000));
+
+                    // Save to localStorage
+                    localStorage.setItem(STORAGE_KEY, newCode);
+
+                    // Update UI
+                    codeDisplay.innerText = newCode;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Registered!';
+                    submitBtn.style.backgroundColor = '#27ae60'; // Green for success
+                    successMessage.style.opacity = '1';
+                    successMessage.innerHTML = 'Thank you! You may screenshot this page. Your code is permanent.';
+
+                    // Optional: auto-hide message after 10 seconds (or keep visible)
+                    setTimeout(() => {
+                        if (localStorage.getItem(STORAGE_KEY) === newCode) {
+                            successMessage.style.opacity = '0.9';
+                        }
+                    }, 10000);
+                });
+            }
+        });
+
+        // Scroll Animation (unchanged)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '50px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        const params = new URLSearchParams(location.search);
+        const driveId = params.get('l');
+        if (driveId) {
+            location.href = './view.html?l=' + driveId;
+        }
+    </script>
+    <script>
+        // BOOK NOW BUTTON: Slide in on load + hide when scrolling past hero
+        document.addEventListener('DOMContentLoaded', function () {
+            const bookBtn = document.querySelector('.booking-btn');
+            const hero = document.querySelector('.hero');
+
+            // 1. Slide in after page load
+            setTimeout(() => {
+                bookBtn.classList.add('visible');
+            }, 300); // small delay so it feels intentional
+
+            // 2. Hide when user scrolls past hero section
+            const heroBottom = hero.offsetTop + hero.offsetHeight;
+
+            function checkScroll() {
+                if (window.scrollY > heroBottom - 120) { // 120px buffer so it hides smoothly
+                    bookBtn.classList.add('hide-on-scroll');
+                    bookBtn.classList.remove('visible');
+                } else {
+                    bookBtn.classList.remove('hide-on-scroll');
+                    bookBtn.classList.add('visible');
+                }
+            }
+
+            window.addEventListener('scroll', checkScroll);
+            window.addEventListener('resize', checkScroll); // recalculate on resize
+            checkScroll(); // run once in case user refreshes mid-page
+        });
+    </script>
 </body>
 
 </html>
