@@ -30,8 +30,23 @@ let sessionId = null;
 // Handle start button click - navigate to frame selection
 $(".start-button").addEventListener("click", () => {
 	socket.emit("chat message", { name: deviceName, msg: ":start" });
-	$(".page-2").style.display = "block";
 	$(".page-1").style.display = "none";
+
+	// Page-1 -> Page-2
+
+	if (navigator === "lly")
+		vn.trigger("lly", 1).then(() => {
+			$(".page-2").style.display = "block";
+			vn.trigger("lly", 2);
+		});
+	else if (navigator === "cml")
+		vn.trigger("cml", 1).then(() => {
+			$(".page-2").style.display = "block";
+		});
+	else if (navigator === "csl")
+		vn.trigger("csl", 1).then(() => {
+			$(".page-2").style.display = "block";
+		});
 });
 
 $(".leave-button").forEach((e) => {
@@ -92,8 +107,14 @@ $(".frame-button").addEventListener("click", () => {
 
 	loadFrame(selectedFrame);
 
+	// Page-2 -> Page-3
+
 	$(".page-3").style.display = "block";
 	$(".page-2").style.display = "none";
+
+	vn.trigger("lly", 3);
+	vn.trigger("cml", 2);
+	vn.trigger("csl", 2);
 });
 
 // ---------- Filter Swipe Functionality ----------
@@ -309,10 +330,19 @@ $(".filter-button").addEventListener("click", () => {
 		}
 	});
 
+	// Page-3 -> Page-4
+
 	$(".page-4").style.display = "block";
 	$(".page-3").style.display = "none";
 
-	startFilmingProcess(); // Begin capture sequence
+	vn.trigger("lly", 4);
+	vn.trigger("cml", 3);
+	vn.trigger("csl", 3);
+
+	setTimeout(
+		() => startFilmingProcess(), // Begin capture sequence
+		navigator === "csl" ? 10000 : 5000
+	);
 });
 
 // Handle offer skip
@@ -346,9 +376,12 @@ const COUNTDOWN_SECONDS = 20; // Seconds between captures
  * Starts the automated capture sequence
  * Handles multiple captures based on selected frame requirements
  */
+
 function startFilmingProcess() {
 	const fractionElement = document.querySelector(".page-4 .fraction");
 	const countdownElement = document.querySelector(".page-4 .countdown");
+
+	$("button.skip").style.display = "block";
 
 	let index = 0; // Track number of captures
 
@@ -363,8 +396,23 @@ function startFilmingProcess() {
 			if (countdown > 6) countdown = 6;
 		};
 
+		let current = index + 1;
+
+		if (current == 2) {
+			// ready to shot current (post shot 1)
+			vn.trigger("lly", 6);
+		} else if (current == 3) {
+			// lly missing
+		} else if (current == 4) {
+			vn.trigger("lly", 8);
+		} else if (current == 5) {
+			// lly missing
+		} else if (current == 6) {
+			vn.trigger("lly", 11);
+		}
+
 		// Update UI with progress
-		fractionElement.textContent = `${index + 1} / 6`;
+		fractionElement.textContent = `${current} / 6`;
 		countdownElement.textContent = countdown;
 		$(".unit").textContent = "seconds";
 
@@ -381,6 +429,20 @@ function startFilmingProcess() {
 					name: deviceName,
 					msg: `:countdown-${countdown}-capture`,
 				});
+
+				if (current == 1) {
+					vn.trigger("lly", 5);
+				} else if (current == 2) {
+					// lly missing
+				} else if (current == 3) {
+					vn.trigger("lly", 7);
+				} else if (current == 4) {
+					vn.trigger("lly", 9);
+				} else if (current == 5) {
+					vn.trigger("lly", 10);
+				} else if (current == 6) {
+					vn.trigger("lly", 12);
+				}
 			}
 
 			if (countdown <= 0) {
@@ -398,6 +460,9 @@ function startFilmingProcess() {
 							name: deviceName,
 							msg: `:end`,
 						});
+
+						// Page-4 -> Page-5
+
 						$(".page-5").style.display = "block";
 						initPage5();
 						$(".page-4").style.display = "none";
@@ -543,6 +608,7 @@ let selectedImages = new Array(framePictureAmount).fill(null); // framePictureAm
 let selectedImageMap = {};
 
 function initPage5() {
+	vn.trigger("lly", 13);
 	renderPreviewToCanvas(frameDetail, {});
 	let index = 0;
 	$(".page-5>.grid>.img").forEach((e) => {
@@ -590,6 +656,8 @@ function initPage5() {
 			name: deviceName,
 			msg: `:generate-${JSON.stringify(selectedImages)}`,
 		});
+
+		vn.trigger("lly", 14);
 	});
 }
 
@@ -632,8 +700,17 @@ socket.on("chat message", (data) => {
 	if (msg.startsWith(":local-link-")) {
 		const link = msg.replace(":local-link-", "");
 
+		// Page-5 -> Page-6
+
 		$(".page-5").style.display = "none";
 		$(".page-6").style.display = "block";
+
+		vn.trigger("cml", 4);
+		try {
+			vn.trigger("csl", 4).then(() => {
+				vn.trigger("csl", 5);
+			});
+		} catch {}
 
 		$(".page-6 .current").textContent = `Making it available online...`;
 

@@ -272,6 +272,10 @@ body {
 
 		color: rgba(0, 0, 0, 0.4);
 	}
+
+	button.skip {
+		display: none;
+	}
 }
 
 .page-5 {
