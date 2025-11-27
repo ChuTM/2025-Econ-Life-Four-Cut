@@ -189,6 +189,7 @@ Create a `.env` file in the server directory with the following variables:
 | **17 Nov** | Built result-generation system (frame + filter overlay).<br>Integrated Google Drive automatic upload and online photo gallery for review.<br>Added “Skip” button for optional steps (currently unstyled). |
 | **18 Nov** | Developed `/printer` service endpoint and basic print queue logic (untested with physical printer). |
 | **20 Nov** | Tested with the camera, succes. |
+| **And On** | Logged on Git Commitments |
 
 ### Current Demo Features (End-to-End Flow)
 
@@ -210,7 +211,7 @@ The demo is fully functional from start to finish without dedicated styling.
 | 1        | Redesign `/iPad.html`             | Modern, booth-themed UI/UX with large touch targets | Not started |
 | 2        | Redesign Frames & Overlays        | Create Economics/SCC 2025 themed frames       | Not started |
 | 3        | Re-configure Filters              | Add fun, event-relevant filters (e.g., money rain, charts) | Not started |
-| 4        | Printer Integration & Testing     | Test with actual thermal/photo printer, handle errors | In progress (code only) |
+| DONE        | Printer Integration & Testing     | Test with actual thermal/photo printer, handle errors | In progress (code only) |
 | 5        | Full-System Stress Test           | Simulate 50–100 consecutive users, check stability | Pending    |
 | 7        | Final Polish & On-site Deployment | Styling, error handling, offline fallback    | Pending    |
 
