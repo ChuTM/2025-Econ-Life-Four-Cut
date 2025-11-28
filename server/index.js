@@ -410,21 +410,15 @@ io.on("connection", (socket) => {
 		io.emit("chat message", { name: data.name, msg: data.msg });
 
 		if (data.msg.startsWith(":frame-")) {
-			frameID = data.msg.split("-")[1];
+			frameID = data.msg.match(/^:frame-(.+)-[^-]+$/ )?.[1] ?? null;
 
 			addToRecord("frame", frameID);
-		}
-
-		else if (data.msg.startsWith(":filter-")) {
+		} else if (data.msg.startsWith(":filter-")) {
 			const filter = data.msg.replace(":filter-", "");
 			addToRecord("filter", filter);
-		}
-
-		else if (data.msg.startsWith(":animation-started-")) {
+		} else if (data.msg.startsWith(":animation-started-")) {
 			addToRecord("image-count", ++n);
-		}
-
-		else if (data.msg === ":start") {
+		} else if (data.msg === ":start") {
 			id = generateId();
 			n = 0;
 			currentUploadLinks = [];
@@ -437,21 +431,13 @@ io.on("connection", (socket) => {
 			io.emit("session-id", id);
 
 			addToRecord("participated", Date.now());
-		}
-
-		else if (data.msg.startsWith(":purchase-confirmed")) {
+		} else if (data.msg.startsWith(":purchase-confirmed")) {
 			addToRecord("purchase", true);
-		}
-
-		else if (data.msg.startsWith(":print")) {
+		} else if (data.msg.startsWith(":print")) {
 			addToRecord("print", true);
-		}
-
-		else if (data.msg.startsWith(":navigator")) {
-			addToRecord("navigator", data.msg.split(':navigator-')[1]);
-		}
-
-		else if (data.msg.startsWith(":generate-")) {
+		} else if (data.msg.startsWith(":navigator")) {
+			addToRecord("navigator", data.msg.split(":navigator-")[1]);
+		} else if (data.msg.startsWith(":generate-")) {
 			// Extract the JSON array part after ":generate-"
 			const jsonPart = data.msg.slice(10); // ":generate-".length === 10
 
@@ -513,7 +499,7 @@ io.on("connection", (socket) => {
 			const imageMap = {};
 			imagePaths.forEach((imgPath, index) => {
 				// Sanitize / normalize the path to prevent directory traversal
-				const safePath = imgPath.split('/uploads/')[1];
+				const safePath = imgPath.split("/uploads/")[1];
 				const fullPath = path.join(
 					__dirname,
 					"public",

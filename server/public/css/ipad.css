@@ -10,7 +10,9 @@ html {
 
 body {
 	user-select: none;
-	font-family: 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont,
+		"Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+		"Helvetica Neue", sans-serif;
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
@@ -38,7 +40,7 @@ body {
 	background: url(/assets/img/pages/page-1/background.png);
 	background-size: contain;
 	display: block;
-	
+
 	transition: 1s;
 
 	.start-button {
@@ -100,7 +102,7 @@ body {
 			display: flex;
 			flex-direction: column;
 
-			color: #99595D;
+			color: #99595d;
 		}
 
 		.chinese {
@@ -129,7 +131,7 @@ body {
 				display: flex;
 				align-items: center;
 
-				color: #99595D;
+				color: #99595d;
 			}
 
 			span.description {
@@ -204,7 +206,7 @@ body {
 		z-index: 9;
 
 		.layer-overlap {
-			background: #F0FFC1;
+			background: #f0ffc1;
 			height: 100vh;
 			position: absolute;
 			left: 510px;
@@ -214,7 +216,7 @@ body {
 		}
 
 		.line-overlap {
-			background: #99595C;
+			background: #99595c;
 			height: 100vh;
 			position: absolute;
 			left: 499px;
@@ -230,12 +232,11 @@ body {
 			font-size: 52px;
 			transform: translate(-70%, -50%);
 			opacity: 0;
-			
 
 			transition: 1s;
 			transition-delay: 0.5s;
 
-			color: #99595D;
+			color: #99595d;
 		}
 	}
 
@@ -247,7 +248,7 @@ body {
 		.line-overlap {
 			left: 100vw;
 		}
-		
+
 		h1 {
 			transform: translate(-50%, -50%);
 			opacity: 1;
@@ -266,7 +267,6 @@ body {
 }
 
 .page-2 {
-
 	.wrapper {
 		position: absolute;
 		top: 55%;
@@ -322,7 +322,7 @@ body {
 		right: 50px;
 		border: none;
 		outline: none;
-		background: #925D5E;
+		background: #925d5e;
 		color: white;
 		font-size: 45px;
 		font-weight: bold;
@@ -428,7 +428,7 @@ body {
 		right: 50px;
 		border: none;
 		outline: none;
-		background: #925D5E;
+		background: #925d5e;
 		color: white;
 		font-size: 45px;
 		font-weight: bold;
@@ -472,7 +472,7 @@ body {
 		align-items: center;
 		text-align: center;
 
-		color: #99595D;
+		color: #99595d;
 	}
 
 	.unit {
@@ -500,8 +500,6 @@ body {
 }
 
 .page-5 {
-	display: none;
-
 	.grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr; /* 2 columns */
@@ -536,8 +534,8 @@ body {
 		height: 70px;
 		bottom: 50px;
 		left: 50px;
-		background: #925D5E;
-		border: 3px solid rgba(0, 0, 0, 0.71);
+		background: #bf4547;
+		border: 1px solid rgba(0, 0, 0, 0.71);
 		border-radius: 14px;
 		font-style: normal;
 		font-weight: 700;
@@ -548,7 +546,7 @@ body {
 		justify-content: center;
 		text-align: center;
 
-		color: #99595D;
+		color: white;
 	}
 
 	.preview {
@@ -557,7 +555,7 @@ body {
 		position: absolute;
 		left: 40px;
 		top: 63px;
-		background: #99595D;
+		background: #99595d;
 		transform: rotate(7deg);
 	}
 
@@ -650,7 +648,7 @@ body {
 		align-items: center;
 		text-align: right;
 
-		color: #99595D;
+		color: #99595d;
 	}
 
 	span.line {
@@ -662,7 +660,7 @@ body {
 		left: calc(50% - 671px / 2 + 362.5px);
 		top: 151px;
 
-		border: 1px solid #99595D;
+		border: 1px solid #99595d;
 	}
 
 	span.current {
@@ -720,7 +718,7 @@ body {
 		align-items: center;
 		text-align: right;
 
-		color: #99595D;
+		color: #99595d;
 	}
 
 	.countdown {
@@ -743,8 +741,8 @@ body {
 		position: absolute;
 		width: 290px;
 		height: 70px;
-		background: #925D5E;
-		border: 3px solid rgba(0, 0, 0, 0.71);
+		background: #925d5e;
+		border: 1px solid rgba(0, 0, 0, 0.71);
 		border-radius: 14px;
 		font-style: normal;
 		font-weight: 700;
@@ -755,7 +753,11 @@ body {
 		justify-content: center;
 		text-align: center;
 
-		color: #99595D;
+		color: white;
+
+		img {
+			filter: invert(1);
+		}
 	}
 
 	.text-offer {
@@ -785,7 +787,7 @@ body {
 
 		text-align: left;
 
-		color: #99595D;
+		color: #99595d;
 	}
 
 	h2 {
@@ -797,7 +799,7 @@ body {
 		align-items: center;
 		margin-top: 0px;
 
-		color: #99595D;
+		color: #99595d;
 	}
 
 	.skip {
@@ -810,7 +812,7 @@ body {
 		align-items: center;
 		text-decoration-line: underline;
 
-		color: #99595D;
+		color: #99595d;
 
 		opacity: 0.3;
 	}
@@ -842,7 +844,7 @@ body {
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: rgba(247, 0, 0, 0.5);
+	background: rgba(0, 132, 0, 0.5);
 	backdrop-filter: blur(10px) brightness(70%) saturate(150%);
 	display: flex;
 	justify-content: center;
@@ -888,7 +890,7 @@ body {
 	button {
 		width: 160px;
 		height: 60px;
-		background: #99595D;
+		background: #99595d;
 		border: none;
 		outline: none;
 		margin-top: 50px;
@@ -900,12 +902,13 @@ body {
 	}
 
 	input[type="range"] {
+		--value: 0%;
 		-webkit-appearance: none;
 		appearance: none;
 		width: 80%;
-		height: 40px;
+		height: 20px;
 		border-radius: 20px;
-		background: #ddd;
+		background: linear-gradient(90deg, blue 0%, yellow calc(var(--value) - 15%) ,white var(--value), #FFCC00 100%);
 		outline: none;
 		padding: 0;
 		margin: 0;
@@ -914,12 +917,12 @@ body {
 	input[type="range"]::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		appearance: none;
-		width: 120px;
-		height: 60px;
-		border-radius: 60px;
-		background: #3299ff;
+		width: 80px;
+		height: 80px;
+		background: url(/assets/icons/cart.svg);
+		transform: translate(-20px, 10px);
+		background-size: cover;
 		cursor: pointer;
-		border: 3px solid rgba(0, 0, 0, 0.71);
 		margin-top: -3px;
 	}
 }

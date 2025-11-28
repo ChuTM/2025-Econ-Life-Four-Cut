@@ -417,14 +417,89 @@ $(".text-offer .skip").addEventListener("click", () => {
 
 // Update slider overlay transparency based on value
 $("#purchase-confirm").addEventListener("input", (e) => {
-	$(".purchase-confirm-overlap").style.background = `rgba(247, 0, 0, ${
+	cancelPulse();
+	$(".purchase-confirm-overlap").style.background = `rgba(0, 132, 0, ${
 		0.5 + e.target.value / 200
 	})`;
+	$("#purchase-confirm").style.setProperty("--value", `${e.target.value}%`);
 });
+
+let purchaseAnimationTimer;
+let cancelPulse = () => {};
 
 // Show purchase confirmation overlay
 $(".shop").addEventListener("click", () => {
 	$(".purchase-confirm-overlap").classList.add("visible");
+	function setAnimationValue(v) {
+		$("#purchase-confirm").value = v;
+	}
+
+	// EDIT ONLY THESE 6 LINES
+	const durationMs = 1000; // total time for one full 0→10→0
+	const startNum = 0;
+	const maxNum = 7;
+	const easing = (t) => 1 - Math.pow(1 - t, 4); // easeOutQuart
+	const step = 0.001;
+	const repeatCount = 2; // ←←← CHANGE THIS TO HOW MANY TIMES YOU WANT
+	const startDelay = 400;
+
+	// RUN ANIMATION – replace entire old block
+	setTimeout(() => {
+		const half = durationMs / 2;
+		const up = [];
+		const down = [];
+		for (let i = startNum; i <= maxNum; i += step) up.push(i);
+		for (let i = maxNum; i >= startNum; i -= step) down.push(i);
+
+		let done = 0;
+
+		const play = () => {
+			if (done >= repeatCount) return;
+
+			let upIdx = 0,
+				downIdx = 0;
+			let cancelled = false;
+			const start = performance.now();
+
+			// This function will be overwritten on every new pulse
+			cancelPulse = () => {
+				cancelled = true;
+				setAnimationValue(startNum); // instantly snap back to 0
+				cancelPulse = () => {};
+			};
+
+			const tick = (now) => {
+				if (cancelled) return;
+
+				const elapsed = now - start;
+
+				if (elapsed < half) {
+					const p = elapsed / half;
+					const target = Math.floor(easing(p) * up.length);
+					while (upIdx < target) setAnimationValue(up[upIdx++]);
+				} else {
+					const p = (elapsed - half) / half;
+					if (p >= 1 || cancelled) {
+						while (downIdx < down.length)
+							setAnimationValue(down[downIdx++]);
+						done++;
+						if (done < repeatCount && !cancelled) {
+							requestAnimationFrame(play);
+						}
+						return;
+					}
+					const target = Math.floor(easing(p) * down.length);
+					while (downIdx < target) setAnimationValue(down[downIdx++]);
+				}
+
+				requestAnimationFrame(tick);
+			};
+
+			requestAnimationFrame(tick);
+		};
+
+		play();
+	}, startDelay); // you can keep your startDelay here if you want
 });
 
 // Hide purchase confirmation overlay
@@ -807,10 +882,14 @@ socket.on("chat message", (data) => {
 		// Purchase confirmation slider handler
 		$("#purchase-confirm").addEventListener("change", (e) => {
 			if (e.target.value != 100) {
+				$("#purchase-confirm").style.setProperty(
+					"--value",
+					e.target.value
+				);
 				e.target.value = 0;
 				$(
 					".purchase-confirm-overlap"
-				).style.background = `rgba(247, 0, 0, 0.5)`;
+				).style.background = `rgba(0, 132, 0, 0.5)`;
 				return;
 			}
 
