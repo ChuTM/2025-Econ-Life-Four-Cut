@@ -58,3 +58,4 @@ Dockerfile*
 # Individual files to ignore for security/consistency
 token.js
 token.json
+server/records.json

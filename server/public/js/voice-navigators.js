@@ -57,7 +57,7 @@ const vn = {
 	trigger(navigatorName, index) {
 		// Optional: reject if trying to play a different navigator
 		if (navigator !== navigatorName) {
-			return Promise.reject(new Error("Wrong navigator"));
+			return Promise.reject();
 		}
 
 		if (!voices[navigatorName]) {

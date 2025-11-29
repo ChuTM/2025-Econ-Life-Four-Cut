@@ -179,173 +179,204 @@ $(".frame-button").addEventListener("click", () => {
 	vn.trigger("csl", 2);
 	vn.trigger("hht", 2);
 });
-
-// ---------- Filter Swipe Functionality ----------
-
+const swiper = $("#filterSwiper");
+const track = $(".carousel-track");
+const filters = $(".carousel-track .filter");
+const filterCount = filters.length;
 let currentFilterIndex = 0; // Track active filter index
 
+let isDragging = false;
+let startX = 0;
+let currentTranslateX = 0;
+let dragDistance = 0;
+let vwUnit = window.innerWidth / 100; // Value of 1vw in pixels
+
+// --- Variables for Velocity Tracking ---
+let lastDragX = 0;
+let lastDragTime = 0;
+let dragVelocity = 0; // Calculated in px/ms
+const VELOCITY_THRESHOLD = 0.3; // px/ms threshold for a fast swipe
+
 /**
- * Scrolls to specific filter with smooth animation
+ * Calculates the target X translation (in pixels) to center a filter.
+ * The math relies on the fact that each filter (with its margins) occupies 100vw.
+ * The translation is applied to the 'track'.
+ * @param {number} index - Index of filter to center.
+ * @returns {number} The required translateX value in pixels.
+ */
+function calculateTargetTranslation(index) {
+	// Recalculate vwUnit on demand for responsiveness
+	vwUnit = window.innerWidth / 100;
+
+	// Total space occupied by one slide unit (100vw)
+	const slideUnitPx = 100 * vwUnit;
+
+	// To center the filter, we translate the track by the distance of all previous slides.
+	return -(index * slideUnitPx);
+}
+
+/**
+ * Applies the calculated translation and updates the current index state.
  * @param {number} index - Index of filter to display
  */
 function snapToFilterIndex(index) {
-	const filterWrapper = $(".page-3 .wrapper");
-	const filters = filterWrapper.querySelectorAll(".filter");
+	// Clamp index within bounds
+	currentFilterIndex = Math.min(Math.max(index, 0), filterCount - 1);
 
-	if (index < 0 || index >= filters.length) return;
+	const targetX = calculateTargetTranslation(currentFilterIndex);
 
-	// Calculate scroll position to center filter
-	const targetFilter = filters[index];
-	const target =
-		targetFilter.offsetLeft -
-		(filterWrapper.clientWidth - targetFilter.clientWidth) / 2;
-	filterWrapper.scrollTo({
-		left: target,
-		behavior: "smooth",
-	});
+	// Apply the transform
+	track.style.transform = `translateX(${targetX}px)`;
+	currentTranslateX = targetX;
 
-	currentFilterIndex = index;
 	syncFilter(); // Update server with current filter
 }
 
-const filterWrapper = $(".page-3 .wrapper");
-let startTouchX = 0;
-let startTime = 0;
+/**
+ * Starts drag operation (touch or mouse)
+ * @param {Event} e - Touch or mouse event
+ */
+function startDrag(e) {
+	isDragging = true;
+	// Get initial X position
+	startX = e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
 
-// Track touch start for swipe detection
-filterWrapper.addEventListener("touchstart", (e) => {
-	startTouchX = e.touches[0].clientX;
-	startTime = Date.now();
-});
+	// Disable CSS transition during drag for immediate response
+	track.style.transition = "none";
 
-// Handle touch end for swipe completion
-filterWrapper.addEventListener("touchend", (e) => {
-	const endTouchX = e.changedTouches[0].clientX;
-	const endTime = Date.now();
-	const deltaX = endTouchX - startTouchX;
-	const deltaTime = endTime - startTime || 1; // Prevent division by zero
-	const velocity = deltaX / deltaTime; // Pixels per millisecond
+	// Set current X position to where the transition ended
+	const transformMatch = track.style.transform.match(/translateX\((.*?)px\)/);
+	currentTranslateX = transformMatch ? parseFloat(transformMatch[1]) : 0;
 
-	// Determine if swipe is significant enough to change filter
-	if (Math.abs(deltaX) > 30 && velocity < -0.3) {
-		currentFilterIndex = Math.min(currentFilterIndex + 1, 3);
-	} else if (Math.abs(deltaX) > 30 && velocity > 0.3) {
-		currentFilterIndex = Math.max(currentFilterIndex - 1, 0);
+	// Initialize velocity tracking variables
+	lastDragX = startX;
+	lastDragTime = Date.now();
+	dragVelocity = 0; // Reset velocity
+
+	swiper.style.cursor = "grabbing";
+	e.preventDefault(); // Prevent accidental selection
+}
+
+/**
+ * Handles drag movement - Includes Velocity Calculation
+ * @param {Event} e - Touch or mouse event
+ */
+function drag(e) {
+	if (!isDragging) return;
+
+	const currentX = e.type.includes("mouse")
+		? e.clientX
+		: e.touches[0].clientX;
+
+	dragDistance = currentX - startX;
+
+	// --- Velocity Calculation ---
+	const currentTime = Date.now();
+	const timeDiff = currentTime - lastDragTime;
+
+	if (timeDiff > 0) {
+		const deltaX = currentX - lastDragX;
+		// Velocity is distance moved over time passed (px/ms)
+		dragVelocity = deltaX / timeDiff;
 	}
+
+	lastDragX = currentX;
+	lastDragTime = currentTime;
+	// --- End Velocity Calculation ---
+
+	// Apply new transform: current position + drag distance
+	const newX = currentTranslateX + dragDistance;
+	track.style.transform = `translateX(${newX}px)`;
+}
+
+/**
+ * Ends drag operation and snaps to the nearest filter - Incorporates Velocity
+ */
+function endDrag() {
+	if (!isDragging) return;
+	isDragging = false;
+
+	// Re-enable CSS transition for the snap back/to
+	track.style.transition = "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+	swiper.style.cursor = "grab";
+
+	// Determine if a snap forward or backward is needed
+	const slideUnitPx = 100 * vwUnit;
+	const distanceThreshold = slideUnitPx * 0.2; // 20% distance rule
+
+	let targetIndex = currentFilterIndex;
+
+	// Priority 1: Check for a fast swipe (high velocity)
+	if (dragVelocity < -VELOCITY_THRESHOLD) {
+		// Fast swipe left (next filter)
+		targetIndex = currentFilterIndex + 1;
+	} else if (dragVelocity > VELOCITY_THRESHOLD) {
+		// Fast swipe right (previous filter)
+		targetIndex = currentFilterIndex - 1;
+	}
+	// Priority 2: If not fast enough, check the distance threshold
+	else if (dragDistance < -distanceThreshold) {
+		// Slow but long swipe left (next filter)
+		targetIndex = currentFilterIndex + 1;
+	} else if (dragDistance > distanceThreshold) {
+		// Slow but long swipe right (previous filter)
+		targetIndex = currentFilterIndex - 1;
+	}
+	// If neither condition is met, targetIndex remains currentFilterIndex (snaps back to center)
+
+	// Ensure target index is clamped within bounds
+	targetIndex = Math.min(Math.max(targetIndex, 0), filterCount - 1);
+
+	snapToFilterIndex(targetIndex);
+
+	// Reset drag state
+	startX = 0;
+	dragDistance = 0;
+	dragVelocity = 0;
+}
+
+/**
+ * Handles window resize to maintain responsive centering.
+ */
+function handleResize() {
+	// Recalculate vwUnit
+	vwUnit = window.innerWidth / 100;
+	// Force a snap to the current index to recalculate transform using new window size
 	snapToFilterIndex(currentFilterIndex);
-});
+}
+
+/**
+ * Initializes drag/swipe event listeners
+ */
+function initSwipe() {
+	// Touch events
+	swiper.addEventListener("touchstart", startDrag);
+	swiper.addEventListener("touchmove", drag);
+	swiper.addEventListener("touchend", endDrag);
+	swiper.addEventListener("touchcancel", endDrag);
+
+	// Mouse events for desktop
+	swiper.addEventListener("mousedown", startDrag);
+	swiper.addEventListener("mousemove", drag);
+	swiper.addEventListener("mouseup", endDrag);
+	swiper.addEventListener("mouseleave", endDrag);
+
+	// Responsive handling
+	window.addEventListener("resize", handleResize);
+
+	// Initial snap to the first element's center
+	snapToFilterIndex(currentFilterIndex);
+}
 
 /*
-================================================================================
-Advanced Swipe Handling for Filter Selection
-Supports both touch and mouse input with momentum scrolling
-================================================================================
-*/
-(function () {
-	const swiper = document.getElementById("filterSwiper");
-	const filters = swiper.querySelectorAll(".filter");
-	const filterCount = filters.length;
-
-	let isDragging = false;
-	let startX = 0;
-	let startScrollLeft = 0;
-	let dragVelocity = 0;
-	let lastDragTime = 0;
-	let lastDragX = 0;
-
-	/**
-	 * Initializes swipe event listeners
-	 */
-	function initSwipe() {
-		// Add touch event listeners
-		swiper.addEventListener("touchstart", startDrag);
-		swiper.addEventListener("touchmove", drag);
-		swiper.addEventListener("touchend", endDrag);
-		swiper.addEventListener("touchcancel", endDrag);
-
-		// Add mouse event listeners for desktop testing
-		swiper.addEventListener("mousedown", startDrag);
-		swiper.addEventListener("mousemove", drag);
-		swiper.addEventListener("mouseup", endDrag);
-		swiper.addEventListener("mouseleave", endDrag);
-	}
-
-	/**
-	 * Starts drag operation (touch or mouse)
-	 * @param {Event} e - Touch or mouse event
-	 */
-	function startDrag(e) {
-		isDragging = true;
-		startX = e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
-		startScrollLeft = swiper.scrollLeft; // Save current scroll position
-		lastDragX = startX;
-		lastDragTime = Date.now();
-		swiper.style.scrollBehavior = "auto"; // Disable smooth scroll during drag
-		document.body.style.userSelect = "none"; // Prevent text selection
-		swiper.style.cursor = "grabbing";
-	}
-
-	/**
-	 * Handles drag movement
-	 * @param {Event} e - Touch or mouse event
-	 */
-	function drag(e) {
-		if (!isDragging) return;
-		e.preventDefault(); // Prevent default scrolling
-
-		const currentX = e.type.includes("mouse")
-			? e.clientX
-			: e.touches[0].clientX;
-		const dragDistance = (currentX - startX) * 1.2; // 1.2 = swipe sensitivity
-
-		// Calculate drag velocity for momentum
-		const currentTime = Date.now();
-		const timeDiff = currentTime - lastDragTime;
-		if (timeDiff > 0) {
-			dragVelocity = (currentX - lastDragX) / timeDiff;
-		}
-		lastDragX = currentX;
-		lastDragTime = currentTime;
-
-		// Update scroll position based on drag
-		swiper.scrollLeft = startScrollLeft - dragDistance;
-	}
-
-	/**
-	 * Ends drag operation and applies momentum
-	 */
-	function endDrag() {
-		isDragging = false;
-		document.body.style.userSelect = ""; // Restore text selection
-		swiper.style.cursor = "";
-		swiper.style.scrollBehavior = "smooth"; // Restore smooth scrolling
-
-		// Apply momentum if swipe was fast enough
-		const momentum = dragVelocity * 100; // 100 = momentum strength
-		if (Math.abs(momentum) > 10) {
-			// Minimum threshold
-			swiper.scrollLeft += momentum;
-		}
-	}
-
-	// Initialize swipe when page-3 is active
-	if ($(".page-3").style.display === "block") {
-		initSwipe();
-	} else {
-		const frameButton = $(".frame-button");
-		if (!frameButton.classList.contains("continue")) return;
-		// Override button click to initialize swipe after navigation
-		const originalClick = frameButton.onclick;
-		frameButton.onclick = function () {
-			originalClick.call(this);
-			setTimeout(initSwipe, 100); // Small delay for UI update
-		};
-	}
-})();
+        ================================================================================
+        Synchronization and Button Logic
+        ================================================================================
+        */
 
 /**
  * Synchronizes selected filter with server
- * Extracts filter properties from CSS and sends to iMac
+ * Extracts filter properties from CSS and sends
  */
 function syncFilter() {
 	const selectedFilter = filters[currentFilterIndex];
@@ -358,56 +389,47 @@ function syncFilter() {
 	let filterDetails = {};
 
 	// Parse filter properties from CSS string
-	filterStyle.split(" ").forEach((part) => {
-		const match = part.match(/(.*?)\((.*?)\)/);
-		if (match) {
-			const key = match[1];
-			const value = match[2];
-			filterDetails[key] = value;
-		}
-	});
+	// Regex to match 'function(value)' e.g., hue-rotate(90deg)
+	const regex = /(\w+)\(([^)]+)\)/g;
+	let match;
+	while ((match = regex.exec(filterStyle)) !== null) {
+		const key = match[1];
+		const value = match[2];
+		filterDetails[key] = value.trim();
+	}
 
 	// Send filter configuration to server
+	// Note: socket object is stubbed
+
 	socket.emit("chat message", {
 		name: deviceName,
 		msg: `:filter-${JSON.stringify(filterDetails)}`,
 	});
 }
 
-const filters = document.querySelectorAll(".page-3 .filter");
-
-// Handle filter confirmation - navigate to capture phase
+// Handle filter confirmation - navigate to capture phase (Stubbed)
 $(".filter-button").addEventListener("click", () => {
-	// Determine closest filter based on scroll position
-	let closestIndex = 0;
-	let closestDistance = Infinity;
-	const centerPosition =
-		filterWrapper.scrollLeft + filterWrapper.clientWidth / 2;
+	console.log(`Filter ${currentFilterIndex + 1} selected!`);
 
-	filters.forEach((filter, index) => {
-		const filterCenter = filter.offsetLeft + filter.clientWidth / 2;
-		const distance = Math.abs(centerPosition - filterCenter);
-		if (distance < closestDistance) {
-			closestDistance = distance;
-			closestIndex = index;
-		}
-	});
-
-	// Page-3 -> Page-4
+	// Log the transition: Page-3 -> Page-4
+	// In a real application, you'd show/hide pages here.
 
 	$(".page-4").classList.remove("hide");
 	$(".page-3").classList.add("hide");
 
+	// Log VN triggers (stubbed)
 	vn.trigger("lly", 4);
 	vn.trigger("cml", 3);
 	vn.trigger("csl", 3);
 	vn.trigger("hht", 3);
 
-	setTimeout(
-		() => startFilmingProcess(), // Begin capture sequence
-		navigator === "csl" ? 10000 : 5000
-	);
+	// Log start filming process (stubbed)
+
+	setTimeout(() => startFilmingProcess(), navigator === "csl" ? 10000 : 5000);
 });
+
+// Initialize the swiper logic on load
+window.onload = initSwipe;
 
 // Handle offer skip
 $(".text-offer .skip").addEventListener("click", () => {

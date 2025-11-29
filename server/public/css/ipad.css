@@ -341,58 +341,107 @@ body {
 }
 
 .page-3 {
+	--filter-card-width: 80vw;
+	--filter-card-margin: 10vw;
+	--filter-card-total-width: 100vw;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden; /* Hide the overall page overflow */
+
 	img {
-		height: 100%;
+		position: absolute;
 		width: 100%;
-		object-fit: cover;
-		object-position: center;
+		height: 100%;
 	}
 
+	/* Removed the @keyframes gradientShift block */
+
+	/* The wrapper now acts as the viewport mask */
 	.wrapper {
 		position: absolute;
 		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-
+		left: 0;
+		transform: translateY(-50%); /* Center vertically */
 		width: 100%;
-		height: 100%;
+		height: 70vh; /* Responsive height */
+		cursor: grab;
+	}
 
+	/* The new container that will be translated */
+	.carousel-track {
 		display: flex;
 		flex-direction: row;
-		overflow-x: scroll;
+		height: 100%;
+		/* Apple-like smoothness: cubic-bezier(0.25, 1, 0.5, 1) or ease-out */
+		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform; /* Performance hint */
 	}
 
+	.filter-name {
+		position: absolute;
+		bottom: 0%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 10;
+		font-size: 1.5rem;
+
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+
+		.chinese {
+			font-size: 1rem;
+		}
+	}
+
+	/* The filter card itself */
 	.filter {
-		flex: 1;
+		/* Sizing to show one centered filter with neighbors peeking */
+		min-width: var(--filter-card-width); /* 80vw width */
+		height: 100%;
+
+		/* Margin creates the spacing and centers the content relative to the wrapper */
+		/* This 10vw margin + 80vw width + 10vw margin = 100vw total space per slide unit */
+		margin: 0 var(--filter-card-margin);
+
+		flex-shrink: 0;
 		position: relative;
-		overflow: auto;
-		margin: 55px;
-		margin-top: 119px;
+		overflow: hidden;
 
-		height: 701px;
-		min-width: 1257px;
+		border-radius: 40px;
 
-		border: 2px solid rgba(0, 0, 0, 0.5);
-		border-radius: 47px;
+		/* --- GORGEOUS DROP SHADOW AND NEW BORDER/GLOW --- */
+		/* Shadow 1: Deep, gorgeous drop shadow (no longer "limited") */
+		/* Shadow 2: Subtle white border/ring for definition */
+		box-shadow: 0 10px 60px rgba(0, 0, 0, 0.25);
+
+		border: 2px solid rgba(255, 255, 255, 0.25);
+
+		/* Center text for debugging */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
 	}
 
+	/* Overlay Styles */
 	.blur-overlay {
 		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 100%;
-
-		backdrop-filter: blur(10px);
-
+		backdrop-filter: blur(5px) brightness(0.8);
+		/* Mask to create fade effect at edges */
 		mask-image: linear-gradient(
 			180deg,
-			black 0%,
-			black 5%,
-			transparent 10%,
-			transparent 90%,
-			black 95%,
-			black 100%
+			transparent 80%,
+			black 90%,
+			transparent 100%
 		);
 	}
 
@@ -402,40 +451,70 @@ body {
 		left: 0;
 		width: 100%;
 		height: 100%;
+		transition: backdrop-filter 0.3s ease; /* Smooth filter changes */
 	}
 
+	/* Filter Definitions (6 now included) */
+	/* IMPORTANT: User requested not to change these filter details */
+	/* 1. Original/Normal */
 	.filter-1 > .filter-overlay {
-		backdrop-filter: blur(0);
+		backdrop-filter: none;
 	}
 
+	/* 2. 英式怀旧复古 (British Nostalgic Retro Filter) */
+	/* Goal: Warm, deep, and aged look. (Based on iPhone recipe: Saturation +40, Temp -7, Contrast +12) */
 	.filter-2 > .filter-overlay {
-		backdrop-filter: hue-rotate(90deg) saturate(150%);
+		backdrop-filter: sepia(50%) contrast(115%) brightness(95%)
+			saturate(140%);
 	}
 
+	/* 3. INS奶油质感 (INS Creamy Texture Filter) */
+	/* Goal: Soft, light, dreamy look. (Based on iPhone recipe: Highlights -20, Contrast -23, Brightness +10) */
 	.filter-3 > .filter-overlay {
-		backdrop-filter: sepia(100%) brightness(120%);
+		backdrop-filter: brightness(115%) contrast(85%) saturate(110%);
 	}
 
+	/* 4. 元气复古 (Energetic Retro Filter) */
+	/* Goal: Vibrant, strong color, retro vibe. (Based on iPhone recipe: Brilliance +77, Saturation +15, Temp +15) */
 	.filter-4 > .filter-overlay {
-		backdrop-filter: contrast(150%) saturate(200%);
+		backdrop-filter: sepia(30%) contrast(125%) saturate(150%)
+			hue-rotate(-10deg);
 	}
 
-	/* BUG: ONLY FOUR CAN BE INCLUDED, FIX LATER */
+	/* 5. 高级暗黑 (INS High-End Dark Filter) */
+	/* Goal: High contrast, low brightness/saturation. (Based on iPhone recipe: Brightness -40, Saturation -40, Contrast +12) */
+	.filter-5 > .filter-overlay {
+		backdrop-filter: brightness(70%) contrast(140%) saturate(75%);
+	}
 
+	/* 6. 绝美发光日落 (Gorgeous Glowing Sunset Filter) */
+	/* Goal: High warmth and brightness. (Based on iPhone recipe: Brilliance +100, Temp +100) */
+	.filter-6 > .filter-overlay {
+		backdrop-filter: brightness(130%) sepia(80%) saturate(160%)
+			hue-rotate(-15deg);
+	}
+
+	/* Filter Button */
 	.filter-button {
 		position: absolute;
-		bottom: 50px;
-		right: 50px;
+		bottom: 5vh;
+		left: 50%;
+		transform: translateX(-50%);
 		border: none;
 		outline: none;
 		background: #925d5e;
 		color: white;
-		font-size: 45px;
+		font-size: clamp(1rem, 4vw, 2rem); /* Responsive font size */
 		font-weight: bold;
-
 		padding: 15px 35px;
-
 		border-radius: 14px;
+		box-shadow: 0 5px 15px rgba(146, 93, 94, 0.5);
+		transition: transform 0.2s, background 0.2s;
+		cursor: pointer;
+	}
+	.filter-button:hover {
+		background: #b07d7e;
+		transform: translateX(-50%) scale(1.05);
 	}
 }
 
@@ -908,7 +987,13 @@ body {
 		width: 80%;
 		height: 20px;
 		border-radius: 20px;
-		background: linear-gradient(90deg, blue 0%, yellow calc(var(--value) - 15%) ,white var(--value), #FFCC00 100%);
+		background: linear-gradient(
+			90deg,
+			blue 0%,
+			yellow calc(var(--value) - 15%),
+			white var(--value),
+			#ffcc00 100%
+		);
 		outline: none;
 		padding: 0;
 		margin: 0;
